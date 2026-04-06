@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Employer Dashboard</h2>
+
+<p>Kompaniya: {{ profile.company_name }}</p>
+
+<p>
+Vakansiyalar:
+<b>{{ vacancies.count }}</b>
+</p>
+
+<p>
+Arizalar:
+<b>{{ applications.count }}</b>
+</p>
+
+{% endblock %}

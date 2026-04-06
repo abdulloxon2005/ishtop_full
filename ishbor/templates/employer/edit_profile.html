@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+
+{% block title %}Kompaniya ma'lumotlarini tahrirlash — IshTopish{% endblock %}
+{% block page_title %}Profilni tahrirlash{% endblock %}
+{% block page_subtitle %}Kompaniyangiz haqidagi ma’lumotlarni yangilang{% endblock %}
+
+{% block content %}
+<div class="edit-company-page">
+
+    <section class="edit-hero">
+        <div class="edit-hero__left">
+            <div class="page-badge">Employer paneli</div>
+            <h2 class="edit-title">Kompaniya ma'lumotlarini tahrirlash</h2>
+            <p class="edit-subtitle">
+                Kompaniya profilingizni to‘liq va ishonchli ko‘rinishda saqlash uchun kerakli ma’lumotlarni yangilang.
+                To‘liq profil nomzodlarda yaxshiroq taassurot qoldiradi.
+            </p>
+        </div>
+
+        <div class="edit-hero__right">
+            <div class="tip-card">
+                <span class="tip-label">Tavsiya</span>
+                <strong class="tip-title">Profilni to‘liq to‘ldiring</strong>
+                <p class="tip-text">
+                    Logo, kompaniya nomi, telefon va manzil kabi ma’lumotlar to‘liq bo‘lsa,
+                    profilingiz ancha professional ko‘rinadi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="edit-layout">
+        <div class="logo-card">
+            <div class="section-head">
+                <h3>Kompaniya logotipi</h3>
+                <p>Kompaniyangizning vizual ko‘rinishini yangilang</p>
+            </div>
+
+            <div class="logo-preview-box">
+                {% if profile.logo %}
+                    <img src="{{ profile.logo.url }}" alt="Kompaniya logotipi" class="logo-preview">
+                {% else %}
+                    <div class="logo-placeholder">
+                        <span>Logo yuklanmagan</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="upload-field">
+                <label for="{{ form.logo.id_for_label }}" class="form-label">Yangi logo yuklash</label>
+                {{ form.logo }}
+                {% for error in form.logo.errors %}
+                    <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="section-head">
+                <h3>Asosiy ma’lumotlar</h3>
+                <p>Kompaniya profilingiz uchun kerakli maydonlarni to‘ldiring</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="company-form">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.company_name.id_for_label }}" class="form-label">Kompaniya nomi</label>
+                        {{ form.company_name }}
+                        {% for error in form.company_name.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.stir.id_for_label }}" class="form-label">STIR (INN)</label>
+                        {{ form.stir }}
+                        {% for error in form.stir.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.company_phone.id_for_label }}" class="form-label">Telefon</label>
+                        {{ form.company_phone }}
+                        {% for error in form.company_phone.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.responsible_full_name.id_for_label }}" class="form-label">Mas'ul shaxs F.I.SH</label>
+                        {{ form.responsible_full_name }}
+                        {% for error in form.responsible_full_name.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label for="{{ form.company_address.id_for_label }}" class="form-label">Manzil</label>
+                        {{ form.company_address }}
+                        {% for error in form.company_address.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="form-error form-error--block">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="window.history.back();">Bekor qilish</button>
+                    <button type="submit" class="btn-primary">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-company-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .edit-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+        gap: 20px;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .page-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        margin-bottom: 14px;
+    }
+
+    .edit-title {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .edit-subtitle {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+        max-width: 760px;
+    }
+
+    .edit-hero__right {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .tip-card {
+        width: 100%;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .tip-label {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.88;
+        margin-bottom: 10px;
+    }
+
+    .tip-title {
+        display: block;
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .tip-text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .edit-layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.5fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .logo-card,
+    .form-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-head {
+        margin-bottom: 18px;
+    }
+
+    .section-head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.7;
+    }
+
+    .logo-preview-box {
+        margin-bottom: 18px;
+        padding: 18px;
+        border-radius: 20px;
+        background: #f8fbff;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 260px;
+    }
+
+    .logo-preview {
+        max-width: 100%;
+        max-height: 220px;
+        object-fit: contain;
+        border-radius: 16px;
+    }
+
+    .logo-placeholder {
+        width: 100%;
+        min-height: 180px;
+        border-radius: 18px;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-soft);
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff;
+    }
+
+    .upload-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .company-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group--full {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .form-card input,
+    .form-card textarea,
+    .form-card select,
+    .logo-card input[type="file"] {
+        width: 100%;
+        min-height: 50px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        transition: 0.2s ease;
+        outline: none;
+    }
+
+    .form-card textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-card input:focus,
+    .form-card textarea:focus,
+    .form-card select:focus,
+    .logo-card input[type="file"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .logo-card input[type="file"] {
+        padding: 12px;
+    }
+
+    .form-error {
+        font-size: 13px;
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    .form-error--block {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    @media (max-width: 1024px) {
+        .edit-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .edit-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .edit-hero,
+        .logo-card,
+        .form-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .edit-title {
+            font-size: 24px;
+        }
+
+        .section-head h3 {
+            font-size: 18px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn-primary,
+        .form-actions .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

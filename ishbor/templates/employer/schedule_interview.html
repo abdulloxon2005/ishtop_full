@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Suhbat belgilash — IshTopish{% endblock %}
+{% block page_title %}Suhbat belgilash{% endblock %}
+{% block page_subtitle %}Nomzod uchun suhbat sanasi va havolasini kiriting{% endblock %}
+
+{% block content %}
+<div class="interview-page">
+
+    <section class="interview-hero">
+        <div class="interview-hero__left">
+            <div class="page-badge">Employer paneli</div>
+            <h2 class="interview-title">Suhbat belgilash</h2>
+            <p class="interview-subtitle">
+                <strong>{{ application.user.get_full_name|default:application.user.username }}</strong> uchun suhbat vaqti,
+                havolasi yoki manzilini kiriting. Nomzodga aniq va tushunarli ma’lumot yuborilishi tavsiya etiladi.
+            </p>
+        </div>
+
+        <div class="interview-hero__right">
+            <div class="tip-card">
+                <span class="tip-label">Tavsiya</span>
+                <strong class="tip-title">Vaqtni aniq belgilang</strong>
+                <p class="tip-text">
+                    Sana, vaqt va havolani to‘g‘ri kiritsangiz, nomzod suhbatga oson ulanadi yoki yetib keladi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="interview-form-card">
+        <div class="section-head">
+            <h3>Suhbat ma’lumotlari</h3>
+            <p>Nomzodga yuboriladigan suhbat tafsilotlarini to‘ldiring</p>
+        </div>
+
+        <form method="POST" class="interview-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="date_time" class="form-label">Suhbat vaqti</label>
+                <input type="datetime-local" id="date_time" name="date_time" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location_link" class="form-label">Link (Zoom/Google Meet) yoki manzil</label>
+                <input
+                    type="text"
+                    id="location_link"
+                    name="location_link"
+                    class="form-input"
+                    placeholder="https://zoom.us/j/... yoki ofis manzili"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="notes" class="form-label">Nomzod uchun eslatma</label>
+                <textarea
+                    id="notes"
+                    name="notes"
+                    class="form-textarea"
+                    rows="4"
+                    placeholder="Suhbatga tayyor bo‘ling, 10 daqiqa oldin ulanib qo‘ying..."
+                ></textarea>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'employer_applications_list' %}" class="btn-secondary">Bekor qilish</a>
+                <button type="submit" class="btn-primary">Suhbatni yuborish</button>
+            </div>
+        </form>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .interview-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .interview-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+        gap: 20px;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .page-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        margin-bottom: 14px;
+    }
+
+    .interview-title {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .interview-subtitle {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+        max-width: 740px;
+    }
+
+    .interview-hero__right {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .tip-card {
+        width: 100%;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+    }
+
+    .tip-label {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.88;
+        margin-bottom: 10px;
+    }
+
+    .tip-title {
+        display: block;
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .tip-text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .interview-form-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        max-width: 860px;
+    }
+
+    .section-head {
+        margin-bottom: 20px;
+    }
+
+    .section-head h3 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.7;
+    }
+
+    .interview-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        min-height: 50px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        transition: 0.2s ease;
+        outline: none;
+    }
+
+    .form-textarea {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .interview-hero {
+            grid-template-columns: 1fr;
+        }
+
+        .interview-form-card {
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .interview-hero,
+        .interview-form-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .interview-title {
+            font-size: 24px;
+        }
+
+        .section-head h3 {
+            font-size: 19px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn-primary,
+        .form-actions .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

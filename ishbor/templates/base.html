@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IshTopish{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1666ff;
+            --primary-dark: #0f52d6;
+            --primary-soft: #eef4ff;
+            --bg: #f5f9ff;
+            --white: #ffffff;
+            --text: #0f172a;
+            --text-soft: #64748b;
+            --border: #dbe5f0;
+            --sidebar: #ffffff;
+            --header: rgba(255, 255, 255, 0.85);
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            --sidebar-width: 270px;
+            --sidebar-collapsed: 92px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* SVG icon base styles */
+        .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 18px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: width 0.28s ease, transform 0.28s ease;
+            z-index: 1100;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 10px 20px rgba(22, 102, 255, 0.22);
+        }
+
+        .brand-text {
+            min-width: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .brand-title span {
+            color: var(--primary);
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .brand-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .sidebar-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 10px 2px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .sidebar-section-title {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 14px;
+            border-radius: 14px;
+            color: var(--text-soft);
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.22s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .menu-item:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, #edf4ff, #e8f1ff);
+            color: var(--primary);
+            box-shadow: inset 0 0 0 1px #d9e7ff;
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-text {
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-footer .menu-item {
+            color: #dc2626;
+        }
+
+        .sidebar-footer .menu-item:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.28s ease;
+            min-width: 0;
+        }
+
+        .main.expanded {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(12px);
+            background: var(--header);
+            border-bottom: 1px solid rgba(219, 229, 240, 0.9);
+        }
+
+        .topbar-inner {
+            min-height: 76px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        .page-head h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text);
+        }
+
+        .page-head p {
+            font-size: 14px;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-soft);
+        }
+
+        .topbar-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 8px 16px rgba(22, 102, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(219, 229, 240, 0.9);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            min-height: calc(100vh - 160px);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s ease;
+            z-index: 1050;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .page-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: -0.4px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-family: "Inter", sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(22, 102, 255, 0.18);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 860px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width) !important;
+                box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                width: var(--sidebar-width);
+            }
+
+            .sidebar.collapsed .brand-text,
+            .sidebar.collapsed .menu-text,
+            .sidebar.collapsed .sidebar-section-title {
+                opacity: 1;
+                width: auto;
+                overflow: visible;
+            }
+
+            .main,
+            .main.expanded {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .toggle-btn {
+                display: none;
+            }
+
+            .topbar-inner {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .content-card {
+                padding: 18px;
+                border-radius: 18px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page-head h1 {
+                font-size: 20px;
+            }
+
+            .page-head p {
+                font-size: 13px;
+            }
+
+            .topbar-chip {
+                display: none;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 14px;
+            }
+
+            .content-card {
+                padding: 16px;
+            }
+        }
+        /* ===== Toast Messages ===== */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 28px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 420px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid var(--border);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.6;
+            pointer-events: all;
+            animation: toastSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .toast.toast-hide {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .toast-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-icon .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .toast-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toast-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .toast-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .toast-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: 0.2s ease;
+        }
+
+        .toast-close:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            right: 16px;
+            height: 3px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .toast-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            animation: toastProgress 5s linear forwards;
+        }
+
+        /* Success */
+        .toast--success {
+            border-color: #bbf7d0;
+            background: linear-gradient(135deg, #f0fdf4, #fff);
+        }
+        .toast--success .toast-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .toast--success .toast-title {
+            color: #16a34a;
+        }
+        .toast--success .toast-progress-bar {
+            background: #16a34a;
+        }
+
+        /* Error */
+        .toast--error {
+            border-color: #fecaca;
+            background: linear-gradient(135deg, #fef2f2, #fff);
+        }
+        .toast--error .toast-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .toast--error .toast-title {
+            color: #dc2626;
+        }
+        .toast--error .toast-progress-bar {
+            background: #dc2626;
+        }
+
+        /* Warning */
+        .toast--warning {
+            border-color: #fed7aa;
+            background: linear-gradient(135deg, #fff7ed, #fff);
+        }
+        .toast--warning .toast-icon {
+            background: #ffedd5;
+            color: #ea580c;
+        }
+        .toast--warning .toast-title {
+            color: #ea580c;
+        }
+        .toast--warning .toast-progress-bar {
+            background: #ea580c;
+        }
+
+        /* Info */
+        .toast--info {
+            border-color: #bfdbfe;
+            background: linear-gradient(135deg, #eff6ff, #fff);
+        }
+        .toast--info .toast-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        .toast--info .toast-title {
+            color: #2563eb;
+        }
+        .toast--info .toast-progress-bar {
+            background: #2563eb;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @media (max-width: 640px) {
+            .toast-container {
+                top: auto;
+                bottom: 18px;
+                right: 14px;
+                left: 14px;
+                max-width: 100%;
+            }
+        }
+
+        /* ===== Sidebar GDPR Links ===== */
+        .sidebar-gdpr-links {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .gdpr-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+
+        .gdpr-link:hover {
+            background: #f1f5f9;
+            color: #1666ff;
+        }
+
+        .sidebar.collapsed .sidebar-gdpr-links {
+            display: none;
+        }
+
+        /* ===== Cookie Banner ===== */
+        .cookie-banner {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: calc(100% - 48px);
+            max-width: 640px;
+            background: #fff;
+            border: 1px solid #dbe5f0;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: cookieSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .cookie-banner__content {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .cookie-banner__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: #eef4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cookie-banner__text strong {
+            font-size: 15px;
+            color: #0f172a;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .cookie-banner__text p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .cookie-banner__text a {
+            color: #1666ff;
+            font-weight: 600;
+        }
+
+        .cookie-banner__actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cookie-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-family: "Inter", sans-serif;
+            transition: 0.2s;
+        }
+
+        .cookie-btn--accept {
+            background: linear-gradient(135deg, #1666ff, #0f52d6);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(22, 102, 255, 0.2);
+        }
+
+        .cookie-btn--accept:hover {
+            transform: translateY(-1px);
+        }
+
+        .cookie-btn--more {
+            background: #f1f5f9;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .cookie-btn--more:hover {
+            background: #e2e8f0;
+        }
+
+        @keyframes cookieSlideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .cookie-banner {
+                bottom: 14px;
+                width: calc(100% - 28px);
+                padding: 16px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <a href="{% url 'home' %}" class="brand">
+                    <div class="brand-icon">IT</div>
+                    <div class="brand-text">
+                        <div class="brand-title">Ish<span>Topish</span></div>
+                        <div class="brand-sub">Ish topish platformasi</div>
+                    </div>
+                </a>
+                <button class="toggle-btn" id="desktopToggle" type="button">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+
+            {% if user.is_authenticated and user.role == 'candidate' %}
+                <div>
+                    <div class="sidebar-section-title">Asosiy menyu</div>
+                    <nav class="menu">
+                        <a href="{% url 'candidate_home' %}" class="menu-item {% if request.resolver_match.url_name == 'candidate_home' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </span>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+
+                        <a href="{% url 'job_list' %}" class="menu-item {% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'vacancy_detail' or request.resolver_match.url_name == 'apply_for_job' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                            </span>
+                            <span class="menu-text">Vakansiyalar</span>
+                        </a>
+
+                        <a href="{% url 'candidate_profile' %}" class="menu-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <span class="menu-text">Mening profilim</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <div class="sidebar-section-title">Qo'shimcha</div>
+                    <nav class="menu">
+                        <a href="{% url 'candidate_profile' %}" class="menu-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            </span>
+                            <span class="menu-text">Rezyume qo'shish</span>
+                        </a>
+
+                        <a href="{% url 'job_list' %}" class="menu-item">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <span class="menu-text">Ish qidirish</span>
+                        </a>
+                    </nav>
+                </div>
+
+            {% elif user.is_authenticated and user.role == 'employer' %}
+                <div>
+                    <div class="sidebar-section-title">Asosiy menyu</div>
+                    <nav class="menu">
+                        <a href="{% url 'employer_home' %}" class="menu-item {% if request.resolver_match.url_name == 'employer_home' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </span>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+
+                        <a href="{% url 'vacancy_list' %}" class="menu-item {% if request.resolver_match.url_name == 'vacancy_list' or request.resolver_match.url_name == 'vacancy_create' or request.resolver_match.url_name == 'vacancy_update' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            </span>
+                            <span class="menu-text">Vakansiyalar</span>
+                        </a>
+
+                        <a href="{% url 'employer_applications_list' %}" class="menu-item {% if request.resolver_match.url_name == 'employer_applications_list' or request.resolver_match.url_name == 'schedule_interview' or request.resolver_match.url_name == 'edit_interview' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                            </span>
+                            <span class="menu-text">Arizalar</span>
+                        </a>
+
+                        <a href="{% url 'edit_profile' %}" class="menu-item {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18z"/><path d="M6 12H4a2 2 0 00-2 2v6a2 2 0 002 2h2"/><path d="M18 9h2a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg>
+                            </span>
+                            <span class="menu-text">Kompaniya profili</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <div class="sidebar-section-title">Qo'shimcha</div>
+                    <nav class="menu">
+                        <a href="{% url 'vacancy_create' %}" class="menu-item {% if request.resolver_match.url_name == 'vacancy_create' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            </span>
+                            <span class="menu-text">Vakansiya qo'shish</span>
+                        </a>
+
+                        <a href="{% url 'vacancy_list' %}" class="menu-item">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            </span>
+                            <span class="menu-text">Barcha vakansiyalar</span>
+                        </a>
+                    </nav>
+                </div>
+
+            {% else %}
+                <div>
+                    <div class="sidebar-section-title">Asosiy menyu</div>
+                    <nav class="menu">
+                        <a href="{% url 'home' %}" class="menu-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </span>
+                            <span class="menu-text">Bosh sahifa</span>
+                        </a>
+                        <a href="{% url 'login' %}" class="menu-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </span>
+                            <span class="menu-text">Kirish</span>
+                        </a>
+                        <a href="{% url 'choose_role' %}" class="menu-item {% if request.resolver_match.url_name == 'choose_role' %}active{% endif %}">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                            </span>
+                            <span class="menu-text">Ro'yxatdan o'tish</span>
+                        </a>
+                    </nav>
+                </div>
+            {% endif %}
+
+            <div class="sidebar-footer">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="menu-item">
+                        <span class="menu-icon">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </span>
+                        <span class="menu-text">Chiqish</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="menu-item">
+                        <span class="menu-icon">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        </span>
+                        <span class="menu-text">Kirish</span>
+                    </a>
+                {% endif %}
+
+                <div class="sidebar-gdpr-links">
+                    <a href="{% url 'privacy_policy' %}" class="gdpr-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Maxfiylik
+                    </a>
+                    <a href="{% url 'terms_of_service' %}" class="gdpr-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        Shartlar
+                    </a>
+                    <a href="{% url 'gdpr_policy' %}" class="gdpr-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        GDPR
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <main class="main" id="main">
+            <header class="topbar">
+                <div class="topbar-inner">
+                    <div class="topbar-left">
+                        <button class="mobile-menu-btn" id="mobileToggle" type="button">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        </button>
+                        <div class="page-head">
+                            <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                            <p>{% block page_subtitle %}IshTopish platformasidagi boshqaruv paneli{% endblock %}</p>
+                        </div>
+                    </div>
+
+                    <div class="topbar-right">
+                        <div class="topbar-chip">
+                            {% if user.is_authenticated and user.role == 'candidate' %}
+                                Nomzod paneli
+                            {% elif user.is_authenticated and user.role == 'employer' %}
+                                Employer paneli
+                            {% else %}
+                                IshTopish
+                            {% endif %}
+                        </div>
+
+                        <div class="topbar-avatar">
+                            {% if user.is_authenticated %}
+                                {{ user.username|default:"U"|slice:":1" }}
+                            {% else %}
+                                G
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="toast-container" id="toastContainer">
+                {% for message in messages %}
+                <div class="toast toast--{{ message.tags|default:'info' }}" role="alert">
+                    <div class="toast-icon">
+                        {% if 'success' in message.tags %}
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        {% elif 'error' in message.tags %}
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        {% elif 'warning' in message.tags %}
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        {% else %}
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="toast-body">
+                        <div class="toast-title">
+                            {% if 'success' in message.tags %}
+                                Muvaffaqiyat
+                            {% elif 'error' in message.tags %}
+                                Xatolik
+                            {% elif 'warning' in message.tags %}
+                                Diqqat
+                            {% else %}
+                                Ma'lumot
+                            {% endif %}
+                        </div>
+                        <div class="toast-text">{{ message }}</div>
+                    </div>
+                    <button type="button" class="toast-close" onclick="this.closest('.toast').classList.add('toast-hide'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                        <svg class="icon-sm icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <div class="toast-progress">
+                        <div class="toast-progress-bar"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <section class="content">
+                <div class="content-card">
+                    {% block content %}{% endblock %}
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- GDPR Cookie Banner -->
+    {% if not request.COOKIES.cookie_consent %}
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-banner__content">
+            <div class="cookie-banner__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="cookie-banner__text">
+                <strong>Cookie va maxfiylik</strong>
+                <p>Biz saytni yaxshilash uchun cookie fayllardan foydalanamiz. Davom etish orqali siz <a href="{% url 'privacy_policy' %}">maxfiylik siyosatimiz</a>ga rozilik bildirasiz.</p>
+            </div>
+        </div>
+        <div class="cookie-banner__actions">
+            <button class="cookie-btn cookie-btn--accept" id="cookieAccept">Qabul qilaman</button>
+            <a href="{% url 'privacy_policy' %}" class="cookie-btn cookie-btn--more">Batafsil</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const main = document.getElementById("main");
+        const desktopToggle = document.getElementById("desktopToggle");
+        const mobileToggle = document.getElementById("mobileToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        if (desktopToggle) {
+            desktopToggle.addEventListener("click", () => {
+                sidebar.classList.toggle("collapsed");
+                main.classList.toggle("expanded");
+                localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+            });
+        }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener("click", () => {
+                sidebar.classList.add("mobile-open");
+                sidebarOverlay.classList.add("show");
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener("click", () => {
+                sidebar.classList.remove("mobile-open");
+                sidebarOverlay.classList.remove("show");
+            });
+        }
+
+        if (localStorage.getItem("sidebarCollapsed") === "true" && window.innerWidth > 860) {
+            sidebar.classList.add("collapsed");
+            main.classList.add("expanded");
+        }
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 860) {
+                sidebar.classList.remove("mobile-open");
+                sidebarOverlay.classList.remove("show");
+            }
+        });
+    </script>
+
+    <script>
+        // Toast auto-dismiss
+        document.querySelectorAll('.toast').forEach(toast => {
+            setTimeout(() => {
+                toast.classList.add('toast-hide');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        // Cookie consent handler
+        const cookieAcceptBtn = document.getElementById('cookieAccept');
+        if (cookieAcceptBtn) {
+            cookieAcceptBtn.addEventListener('click', function() {
+                fetch('{% url "cookie_consent" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value
+                            || '{{ csrf_token }}',
+                    },
+                }).then(() => {
+                    const banner = document.getElementById('cookieBanner');
+                    if (banner) {
+                        banner.style.opacity = '0';
+                        banner.style.transform = 'translateX(-50%) translateY(30px)';
+                        banner.style.transition = '0.3s ease';
+                        setTimeout(() => banner.remove(), 300);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

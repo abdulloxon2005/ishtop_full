@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Kompaniya profili — IshTopish{% endblock %}
+{% block page_title %}Kompaniya profili{% endblock %}
+{% block page_subtitle %}Kompaniyangiz haqidagi asosiy ma’lumotlar{% endblock %}
+
+{% block content %}
+<div class="company-profile-page">
+
+    <section class="profile-hero">
+        <div class="profile-hero__left">
+            <div class="page-badge">Employer profili</div>
+            <h2 class="profile-title">
+                {{ profile.company_name|default:"Kompaniya nomi kiritilmagan" }}
+            </h2>
+            <p class="profile-text">
+                Bu bo‘limda kompaniyangizning asosiy ma’lumotlari ko‘rinadi. Profilingizni to‘liq va aniq to‘ldirish nomzodlarda ishonch uyg‘otadi va kompaniyangizni yanada professional ko‘rsatadi.
+            </p>
+
+            <div class="profile-actions">
+                <a href="{% url 'edit_profile' %}" class="btn-primary">Profilni tahrirlash</a>
+            </div>
+        </div>
+
+        <div class="profile-hero__right">
+            <div class="status-card">
+                <span class="status-card__label">Holat</span>
+                <strong class="status-card__value">Kompaniya profili faol</strong>
+                <p class="status-card__text">
+                    Ma’lumotlaringiz nomzodlarga ko‘rinadigan asosiy profil qismi hisoblanadi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="profile-layout">
+        <div class="profile-main">
+            <div class="info-card">
+                <div class="section-head">
+                    <h3>Asosiy ma’lumotlar</h3>
+                    <p>Kompaniya profilingizning joriy holati</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Kompaniya nomi</span>
+                        <strong class="info-value">{{ profile.company_name|default:"Kiritilmagan" }}</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Telefon raqam</span>
+                        <strong class="info-value">{{ profile.company_phone|default:"Kiritilmagan" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="profile-side">
+            <div class="side-card side-card--tip">
+                <div class="side-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+                <h3>Tavsiya</h3>
+                <p>
+                    Kompaniya nomi, telefon raqami, manzil va tavsif kabi bo‘limlarni to‘liq to‘ldirib borish tavsiya etiladi. Bu nomzodlar uchun profilingizni ancha ishonchli qiladi.
+                </p>
+            </div>
+
+            <div class="side-card side-card--soft">
+                <h3>Profil sifati</h3>
+                <p>
+                    To‘liq va tartibli profil ko‘proq nomzodlar e’tiborini tortadi. Profilni muntazam yangilab turish foydali.
+                </p>
+            </div>
+        </aside>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .company-profile-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .profile-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+        gap: 20px;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .profile-hero__left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .page-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        margin-bottom: 14px;
+    }
+
+    .profile-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -1px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .profile-text {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+        max-width: 760px;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .profile-hero__right {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .status-card {
+        width: 100%;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .status-card__label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.88;
+        margin-bottom: 10px;
+    }
+
+    .status-card__value {
+        display: block;
+        font-size: 24px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .status-card__text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .profile-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.8fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .profile-main,
+    .profile-side {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-card,
+    .side-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-head {
+        margin-bottom: 18px;
+    }
+
+    .section-head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.7;
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 14px;
+    }
+
+    .info-item {
+        padding: 16px;
+        border-radius: 18px;
+        background: #f8fbff;
+        border: 1px solid #e2e8f0;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .info-value {
+        display: block;
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--text);
+    }
+
+    .side-card__icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 14px;
+    }
+
+    .side-card h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .side-card p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.8;
+    }
+
+    .side-card--tip {
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+    }
+
+    .side-card--soft {
+        background: #fff;
+    }
+
+    @media (max-width: 1100px) {
+        .profile-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .profile-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .profile-hero,
+        .info-card,
+        .side-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .profile-title {
+            font-size: 26px;
+        }
+
+        .section-head h3 {
+            font-size: 18px;
+        }
+
+        .profile-actions .btn-primary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

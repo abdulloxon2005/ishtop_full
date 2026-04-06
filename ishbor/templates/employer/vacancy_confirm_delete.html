@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Vakansiyani o'chirish — IshTopish{% endblock %}
+{% block page_title %}Vakansiyani o'chirish{% endblock %}
+{% block page_subtitle %}Tanlangan vakansiyani butunlay o'chirishni tasdiqlang{% endblock %}
+
+{% block content %}
+<div class="delete-page">
+
+    <section class="delete-hero">
+        <div class="delete-hero__content">
+            <div class="page-badge danger-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Ogohlantirish</div>
+            <h2 class="delete-title">Vakansiyani o'chirmoqchimisiz?</h2>
+            <p class="delete-subtitle">
+                Ushbu amalni bajarganingizdan so'ng, vakansiya va unga bog'liq barcha arizalar
+                butunlay o'chiriladi. Bu amalni qaytarib bo'lmaydi.
+            </p>
+        </div>
+    </section>
+
+    <section class="delete-card">
+        <div class="vacancy-info">
+            <div class="info-row">
+                <span class="info-label">Lavozim:</span>
+                <strong class="info-value">{{ vacancy.title }}</strong>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Manzil:</span>
+                <strong class="info-value">{{ vacancy.location|default:"Ko'rsatilmagan" }}</strong>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Maosh:</span>
+                <strong class="info-value">{{ vacancy.salary|default:"Kelishiladi" }}</strong>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Ish turi:</span>
+                <strong class="info-value">{{ vacancy.get_job_type_display }}</strong>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Yaratilgan:</span>
+                <strong class="info-value">{{ vacancy.created_at|date:"d.m.Y" }}</strong>
+            </div>
+        </div>
+
+        <div class="delete-actions">
+            <a href="{% url 'vacancy_list' %}" class="btn-secondary">Bekor qilish</a>
+            <form method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger">Ha, o'chirish</button>
+            </form>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 720px;
+    }
+
+    .delete-hero {
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid #fecaca;
+        background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+        box-shadow: 0 8px 20px rgba(220, 38, 38, 0.06);
+    }
+
+    .danger-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #fecaca;
+        margin-bottom: 14px;
+    }
+
+    .delete-title {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    .delete-subtitle {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #64748b;
+        max-width: 600px;
+    }
+
+    .delete-card {
+        background: #fff;
+        border: 1px solid #dbe5f0;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .vacancy-info {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #f8fbff;
+        border: 1px solid #e2e8f0;
+    }
+
+    .info-label {
+        font-size: 13px;
+        color: #64748b;
+        min-width: 100px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #0f172a;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 46px;
+        padding: 0 22px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        transition: 0.2s ease;
+        cursor: pointer;
+        border: none;
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(220, 38, 38, 0.18);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(220, 38, 38, 0.22);
+    }
+
+    @media (max-width: 640px) {
+        .delete-hero,
+        .delete-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .delete-title {
+            font-size: 22px;
+        }
+
+        .delete-actions {
+            flex-direction: column;
+        }
+
+        .delete-actions .btn-secondary,
+        .delete-actions .btn-danger {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

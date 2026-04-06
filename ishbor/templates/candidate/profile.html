@@ -1,0 +1,678 @@
+{% extends 'base.html' %}
+
+{% block title %}Mening profilim — IshTopish{% endblock %}
+{% block page_title %}Mening profilim{% endblock %}
+{% block page_subtitle %}Shaxsiy ma’lumotlar, rezyumelar va xavfsizlik sozlamalari{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+    <div class="profile-layout">
+
+        <aside class="profile-sidebar">
+            <section class="profile-card">
+                <div class="avatar-wrap">
+                    {% if profile.image %}
+                        <img src="{{ profile.image.url }}" alt="Profil rasmi" class="profile-avatar">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.username }}&size=200" alt="Avatar" class="profile-avatar">
+                    {% endif %}
+                </div>
+
+                <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="profile-email">{{ user.email }}</p>
+
+                <div class="profile-meta">
+                    <div class="meta-item">
+                        <span>Telefon</span>
+                        <strong>{{ profile.phone|default:"Kiritilmagan" }}</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Status</span>
+                        <strong>Ish izlovchi</strong>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <div class="profile-main">
+
+            <div class="tabs-nav">
+                <button class="tab-btn active" type="button" data-tab="info-tab">Shaxsiy ma’lumotlar</button>
+                <button class="tab-btn" type="button" data-tab="resume-tab">Mening rezyumelarim</button>
+                <button class="tab-btn" type="button" data-tab="security-tab">Xavfsizlik va GDPR</button>
+            </div>
+
+            <div class="tab-panel active" id="info-tab">
+                <section class="panel-card">
+                    <div class="section-head">
+                        <h3>Shaxsiy ma’lumotlar</h3>
+                        <p>Profilingizni yangilang va dolzarb ma’lumotlarni saqlang</p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" class="styled-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="personal_info">
+
+                        <div class="form-group">
+                            <label>Telefon raqam</label>
+                            <input type="text" name="phone" value="{{ profile.phone }}" placeholder="+998 90 123 45 67">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Men haqimda</label>
+                            <textarea name="bio" rows="5" placeholder="O‘zingiz haqingizda qisqacha ma’lumot yozing...">{{ profile.bio }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Profil rasmini yangilash</label>
+                            <input type="file" name="image">
+                        </div>
+
+                        <button type="submit" class="btn-primary save-btn">Saqlash</button>
+                    </form>
+                </section>
+            </div>
+
+            <div class="tab-panel" id="resume-tab">
+                <section class="panel-card">
+                    <div class="section-head section-head-inline">
+                        <div>
+                            <h3>Mening rezyumelarim</h3>
+                            <p>Yuklangan fayllarni ko‘ring yoki yangi rezyume qo‘shing</p>
+                        </div>
+                    </div>
+
+                    <div class="upload-box">
+                        <h4>Yangi rezyume yuklash</h4>
+                        <form action="{% url 'resume_create' %}" method="POST" enctype="multipart/form-data" class="styled-form">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label>Rezyume nomi</label>
+                                <input type="text" name="title" placeholder="Masalan: Senior Python Developer" required>
+                                <small>Bu nom ish beruvchiga ko‘rinadi.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Faylni tanlang</label>
+                                <input type="file" name="file" accept=".pdf,.doc,.docx" required>
+                            </div>
+
+                            <button type="submit" class="btn-primary">Yuklashni yakunlash</button>
+                        </form>
+                    </div>
+
+                    <div class="resume-list">
+                        {% for resume in resumes %}
+                            <div class="resume-card">
+                                <div class="resume-left">
+                                    <div class="resume-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                                    <div>
+                                        <h4>{{ resume.title }}</h4>
+                                        <p>Yuklangan: {{ resume.created_at|date:"d.m.Y" }}</p>
+                                        <a href="{{ resume.file.url }}" target="_blank" class="resume-link">Ko‘rish</a>
+                                    </div>
+                                </div>
+
+                                <div class="resume-actions">
+                                    <form action="{% url 'resume_delete' resume.id %}" method="POST" onsubmit="return confirm('Haqiqatan ham o‘chirmoqchimisiz?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="delete-btn">O‘chirish</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-box">
+                                <div class="empty-icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+                                <h4>Hali rezyume yuklamagansiz</h4>
+                                <p>Yuqoridagi forma orqali yangi rezyume yuklang.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            <div class="tab-panel" id="security-tab">
+                <section class="panel-card">
+                    <div class="section-head">
+                        <h3>Xavfsizlik va GDPR</h3>
+                        <p>Maxfiylik, ma'lumotlar himoyasi va GDPR sozlamalari</p>
+                    </div>
+
+                    <div class="security-section">
+                        <h4>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            GDPR sozlamalari
+                        </h4>
+
+                        <form method="POST" action="{% url 'update_gdpr_consent' %}" class="styled-form">
+                            {% csrf_token %}
+
+                            <label class="consent-item">
+                                <input type="checkbox" name="gdpr_consent" {% if profile.gdpr_consent %}checked{% endif %}>
+                                <span>
+                                    Shaxsiy ma'lumotlarimni ish beruvchilarga ko'rsatishga roziman (GDPR)
+                                </span>
+                            </label>
+
+                            <label class="consent-item">
+                                <input type="checkbox" name="marketing_consent" {% if profile.marketing_consent %}checked{% endif %}>
+                                <span>
+                                    Marketing xabarnomalarini olishga roziman (ixtiyoriy)
+                                </span>
+                            </label>
+
+                            {% if profile.gdpr_consent_date %}
+                            <p class="consent-date">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.8" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                Rozilik berilgan sana: {{ profile.gdpr_consent_date|date:"d.m.Y H:i" }}
+                            </p>
+                            {% endif %}
+
+                            <button type="submit" class="btn-secondary">Sozlamalarni yangilash</button>
+                        </form>
+                    </div>
+
+                    <div class="security-section">
+                        <h4>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Ma'lumotlarni eksport qilish
+                        </h4>
+                        <p>
+                            GDPR bo'yicha siz o'zingiz haqingizdagi barcha ma'lumotlarni JSON formatda yuklab olish huquqiga egasiz (Data Portability).
+                        </p>
+                        <a href="{% url 'export_user_data' %}" class="btn-secondary">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Ma'lumotlarni yuklab olish (JSON)
+                        </a>
+                    </div>
+
+                    <div class="security-section security-danger">
+                        <h4>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                            Hisobni o'chirish
+                        </h4>
+                        <p>
+                            GDPR "Unutilish huquqi" bo'yicha hisobingiz va barcha shaxsiy ma'lumotlaringizni butunlay o'chirishingiz mumkin. Bu amalni qaytarib bo'lmaydi.
+                        </p>
+                        <a href="{% url 'delete_account' %}" class="btn-danger-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                            Hisobni o'chirish
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .profile-sidebar,
+    .profile-main {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .profile-card,
+    .panel-card {
+        background: #fff;
+        border: 1px solid #dbe5f0;
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .avatar-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+
+    .profile-avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+        border: 4px solid #fff;
+    }
+
+    .profile-name {
+        font-size: 24px;
+        font-weight: 800;
+        text-align: center;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .profile-email {
+        font-size: 14px;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 18px;
+    }
+
+    .profile-meta {
+        display: grid;
+        gap: 12px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 18px;
+    }
+
+    .meta-item {
+        padding: 14px;
+        border-radius: 16px;
+        background: #f8fbff;
+        border: 1px solid #e2e8f0;
+    }
+
+    .meta-item span {
+        display: block;
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .meta-item strong {
+        font-size: 14px;
+        color: #0f172a;
+        line-height: 1.6;
+    }
+
+    .tabs-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid #dbe5f0;
+        border-radius: 18px;
+        padding: 10px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .tab-btn {
+        border: none;
+        background: transparent;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-family: "Inter", sans-serif;
+    }
+
+    .tab-btn:hover {
+        background: #f8fbff;
+        color: #1666ff;
+    }
+
+    .tab-btn.active {
+        background: #eef4ff;
+        color: #1666ff;
+    }
+
+    .tab-panel {
+        display: none;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    .section-head {
+        margin-bottom: 18px;
+    }
+
+    .section-head-inline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .section-head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .styled-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        min-height: 52px;
+        border: 1px solid #dbe5f0;
+        background: #f8fbff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        color: #0f172a;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        background: #fff;
+        border-color: #1666ff;
+        box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .form-group small {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .save-btn {
+        width: fit-content;
+        min-width: 140px;
+    }
+
+    .upload-box {
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fbff;
+        border: 1px solid #dbe5f0;
+        margin-bottom: 20px;
+    }
+
+    .upload-box h4 {
+        font-size: 17px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 14px;
+    }
+
+    .resume-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .resume-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+    }
+
+    .resume-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .resume-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: #eef4ff;
+        color: #1666ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .resume-left h4 {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .resume-left p {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+
+    .resume-link {
+        font-size: 13px;
+        color: #1666ff;
+        font-weight: 700;
+    }
+
+    .resume-actions {
+        flex-shrink: 0;
+    }
+
+    .delete-btn {
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 12px;
+        border: 1px solid #fecaca;
+        background: #fff;
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+    }
+
+    .delete-btn:hover {
+        background: #fef2f2;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 34px 20px;
+        background: #f8fbff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 20px;
+    }
+
+    .empty-icon {
+        font-size: 34px;
+        margin-bottom: 12px;
+    }
+
+    .empty-box h4 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .empty-box p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .security-section {
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fbff;
+        border: 1px solid #dbe5f0;
+        margin-bottom: 16px;
+    }
+
+    .security-section h4 {
+        font-size: 17px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 12px;
+    }
+
+    .security-note p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.8;
+        margin-bottom: 14px;
+    }
+
+    .consent-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+        cursor: pointer;
+    }
+
+    .consent-item input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+        accent-color: #1666ff;
+        flex-shrink: 0;
+    }
+
+    .consent-item span {
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.8;
+    }
+
+    .consent-date {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    .security-danger {
+        background: #fffbfb;
+        border-color: #fee2e2;
+    }
+
+    .security-danger h4 {
+        color: #dc2626;
+    }
+
+    .security-danger p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.8;
+        margin-bottom: 14px;
+    }
+
+    .btn-danger-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 700;
+        transition: 0.2s;
+    }
+
+    .btn-danger-sm:hover {
+        background: #fef2f2;
+    }
+
+    @media (max-width: 1100px) {
+        .profile-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .resume-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .tabs-nav {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .profile-card,
+        .panel-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .profile-name {
+            font-size: 22px;
+        }
+
+        .section-head h3 {
+            font-size: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    tabButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const target = button.dataset.tab;
+
+            tabButtons.forEach(btn => btn.classList.remove("active"));
+            tabPanels.forEach(panel => panel.classList.remove("active"));
+
+            button.classList.add("active");
+            document.getElementById(target).classList.add("active");
+        });
+    });
+</script>
+{% endblock %}

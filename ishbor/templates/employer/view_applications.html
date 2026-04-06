@@ -1,0 +1,574 @@
+{% extends 'base.html' %}
+
+{% block title %}Arizalar paneli — IshTopish{% endblock %}
+{% block page_title %}Arizalar paneli{% endblock %}
+{% block page_subtitle %}Kelib tushgan rezyumelarni ko‘rib chiqing va suhbatlarni boshqaring{% endblock %}
+
+{% block content %}
+<div class="applications-page">
+
+    <section class="applications-hero">
+        <div class="applications-hero__left">
+            <div class="page-badge">Employer paneli</div>
+            <h2 class="applications-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Arizalar paneli</h2>
+            <p class="applications-subtitle">
+                Kelib tushgan nomzodlar arizalarini ko‘rib chiqing, statuslarni yangilang va suhbatlarni boshqaring.
+            </p>
+        </div>
+
+        <div class="applications-hero__right">
+            <div class="count-card">
+                <span class="count-card__label">Jami arizalar</span>
+                <strong class="count-card__value">{{ applications.count }} ta</strong>
+                <p class="count-card__text">Barcha kelib tushgan arizalar soni</p>
+            </div>
+        </div>
+    </section>
+
+    {% if applications %}
+    <section class="applications-table-card">
+        <div class="table-head">
+            <div>
+                <h3>Nomzodlar ro‘yxati</h3>
+                <p>Arizalarni ko‘rib chiqib, kerakli amallarni bajaring</p>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Nomzod</th>
+                        <th>Vakansiya</th>
+                        <th>Rezyume</th>
+                        <th>Status</th>
+                        <th>Suhbat</th>
+                        <th class="text-center">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td>
+                            <div class="candidate-cell">
+                                <div class="candidate-avatar">
+                                    {{ app.user.get_full_name|default:app.user.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="candidate-name">
+                                        {{ app.user.get_full_name|default:app.user.username }}
+                                    </div>
+                                    <div class="candidate-email">
+                                        {{ app.user.email }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="job-badge">{{ app.vacancy.title }}</span>
+                        </td>
+
+                        <td>
+                            {% if app.resume and app.resume.file %}
+                                <a href="{{ app.resume.file.url }}" target="_blank" class="mini-btn mini-btn--primary">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> CV
+                                </a>
+                            {% else %}
+                                <span class="muted-text">Fayl yo‘q</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if app.status == 'pending' %}
+                                <span class="status-badge status-badge--pending">Kutilmoqda</span>
+                            {% elif app.status == 'accepted' %}
+                                <span class="status-badge status-badge--accepted">Qabul qilingan</span>
+                            {% elif app.status == 'rejected' %}
+                                <span class="status-badge status-badge--rejected">Rad etilgan</span>
+                            {% else %}
+                                <span class="status-badge">Noma’lum</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if app.interview %}
+                                <div class="interview-box">
+                                    <div class="interview-date">
+                                        {{ app.interview.date_time|date:"d.m.Y H:i" }}
+                                    </div>
+
+                                    <div class="interview-actions">
+                                        <a href="{{ app.interview.location_link }}" target="_blank" class="mini-btn mini-btn--success">
+                                            Join
+                                        </a>
+                                        <a href="{% url 'edit_interview' app.interview.id %}" class="mini-btn mini-btn--warning">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Tahrirlash
+                                        </a>
+                                        <form method="POST" action="{% url 'delete_interview' app.interview.id %}" style="display:inline;" onsubmit="return confirm('Suhbatni ochirmoqchimisiz?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="mini-btn mini-btn--danger">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> O‘chirish
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'schedule_interview' app.id %}" class="mini-btn mini-btn--primary">
+                                    Suhbat belgilash
+                                </a>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center">
+                            <div class="decision-actions">
+                                <form method="POST" action="{% url 'update_status' app.id 'accepted' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="decision-btn decision-btn--accept" title="Qabul qilish">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'update_status' app.id 'rejected' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="decision-btn decision-btn--reject" title="Rad etish">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% else %}
+    <section class="empty-state">
+        <div class="empty-state__icon"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></div>
+        <h3>Hozircha arizalar yo‘q</h3>
+        <p>
+            Hali birorta ham nomzod ariza topshirmagan. Vakansiyalaringiz faol bo‘lsa, arizalar shu yerda ko‘rinadi.
+        </p>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .applications-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .applications-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
+        gap: 20px;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .page-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        margin-bottom: 14px;
+    }
+
+    .applications-title {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .applications-subtitle {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+        max-width: 760px;
+    }
+
+    .applications-hero__right {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .count-card {
+        width: 100%;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+    }
+
+    .count-card__label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.88;
+        margin-bottom: 10px;
+    }
+
+    .count-card__value {
+        display: block;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .count-card__text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .applications-table-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .table-head {
+        margin-bottom: 18px;
+    }
+
+    .table-head h3 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .table-head p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.7;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .applications-table {
+        width: 100%;
+        min-width: 980px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .applications-table thead th {
+        text-align: left;
+        padding: 16px 14px;
+        font-size: 13px;
+        font-weight: 800;
+        color: #475569;
+        background: #f8fbff;
+        border-bottom: 1px solid #e5edf7;
+        white-space: nowrap;
+    }
+
+    .applications-table thead th:first-child {
+        border-top-left-radius: 16px;
+    }
+
+    .applications-table thead th:last-child {
+        border-top-right-radius: 16px;
+    }
+
+    .applications-table tbody td {
+        padding: 18px 14px;
+        border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+    }
+
+    .applications-table tbody tr:hover {
+        background: #fbfdff;
+    }
+
+    .candidate-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 220px;
+    }
+
+    .candidate-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 800;
+        flex-shrink: 0;
+        text-transform: uppercase;
+        box-shadow: 0 8px 16px rgba(22, 102, 255, 0.18);
+    }
+
+    .candidate-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .candidate-email {
+        font-size: 12px;
+        color: var(--text-soft);
+        line-height: 1.5;
+    }
+
+    .job-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #eef4ff;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        max-width: 220px;
+    }
+
+    .muted-text {
+        font-size: 13px;
+        color: var(--text-soft);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .status-badge--pending {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+
+    .status-badge--accepted {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+
+    .status-badge--rejected {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .interview-box {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 180px;
+    }
+
+    .interview-date {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .interview-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .mini-btn {
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .mini-btn--primary {
+        background: #eef4ff;
+        color: var(--primary);
+        border-color: #dbe8ff;
+    }
+
+    .mini-btn--primary:hover {
+        background: #e3efff;
+    }
+
+    .mini-btn--success {
+        background: #ecfdf5;
+        color: #15803d;
+        border-color: #d7f5e6;
+    }
+
+    .mini-btn--success:hover {
+        background: #def7ea;
+    }
+
+    .mini-btn--warning {
+        background: #fffbeb;
+        color: #b45309;
+        border-color: #fde68a;
+    }
+
+    .mini-btn--warning:hover {
+        background: #fef3c7;
+    }
+
+    .mini-btn--danger {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fecaca;
+    }
+
+    .mini-btn--danger:hover {
+        background: #fee2e2;
+    }
+
+    .decision-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .decision-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        transition: 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .decision-btn--accept {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+
+    .decision-btn--accept:hover {
+        background: #bbf7d0;
+    }
+
+    .decision-btn--reject {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .decision-btn--reject:hover {
+        background: #fecaca;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 48px 24px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #f8fbff 0%, #fdfefe 100%);
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .empty-state__icon {
+        width: 84px;
+        height: 84px;
+        border-radius: 24px;
+        background: var(--primary-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        margin-bottom: 18px;
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+
+    .empty-state p {
+        max-width: 560px;
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+    }
+
+    @media (max-width: 920px) {
+        .applications-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .applications-hero,
+        .applications-table-card,
+        .empty-state {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .applications-title {
+            font-size: 24px;
+        }
+
+        .table-head h3 {
+            font-size: 19px;
+        }
+    }
+</style>
+{% endblock %}

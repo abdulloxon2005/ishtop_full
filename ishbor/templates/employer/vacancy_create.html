@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Yangi vakansiya yaratish — IshTopish{% endblock %}
+{% block page_title %}Yangi vakansiya{% endblock %}
+{% block page_subtitle %}Yangi ish o‘rni uchun e’lon yarating va nomzodlarni jalb qiling{% endblock %}
+
+{% block content %}
+<div class="vacancy-create-page">
+
+    <section class="form-hero">
+        <div class="form-hero__content">
+            <div class="page-badge">Employer paneli</div>
+            <h2 class="form-title">Yangi vakansiya yaratish</h2>
+            <p class="form-subtitle">
+                Vakansiya ma’lumotlarini to‘liq kiriting. Aniq va tushunarli e’lon ko‘proq mos nomzodlarni jalb qiladi.
+            </p>
+        </div>
+
+        <div class="form-hero__tip">
+            <div class="tip-card">
+                <span class="tip-label">Tavsiya</span>
+                <strong class="tip-title">Tavsifni aniq yozing</strong>
+                <p class="tip-text">
+                    Lavozim, talablar, maosh va ish tartibini yozsangiz, nomzodlar uchun vakansiya yanada tushunarli bo‘ladi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="vacancy-form-card">
+        <div class="section-head">
+            <h3>Vakansiya ma’lumotlari</h3>
+            <p>Barcha kerakli maydonlarni to‘ldirib, e’lonni saqlang.</p>
+        </div>
+
+        <form method="POST" class="vacancy-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="form-help">{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="form-error form-error--block">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <a href="{% url 'vacancy_list' %}" class="btn-secondary">Bekor qilish</a>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vacancy-create-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .form-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+        gap: 20px;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .page-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #dbe8ff;
+        margin-bottom: 14px;
+    }
+
+    .form-title {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .form-subtitle {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+        max-width: 720px;
+    }
+
+    .form-hero__tip {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .tip-card {
+        width: 100%;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+    }
+
+    .tip-label {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.88;
+        margin-bottom: 10px;
+    }
+
+    .tip-title {
+        display: block;
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .tip-text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .vacancy-form-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-head {
+        margin-bottom: 20px;
+    }
+
+    .section-head h3 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: var(--text-soft);
+        line-height: 1.7;
+    }
+
+    .vacancy-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .vacancy-form input,
+    .vacancy-form textarea,
+    .vacancy-form select {
+        width: 100%;
+        min-height: 50px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        transition: 0.2s ease;
+        outline: none;
+    }
+
+    .vacancy-form textarea {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .vacancy-form input:focus,
+    .vacancy-form textarea:focus,
+    .vacancy-form select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .form-help {
+        font-size: 12px;
+        color: var(--text-soft);
+        line-height: 1.6;
+    }
+
+    .form-error {
+        font-size: 13px;
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    .form-error--block {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .form-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .form-hero,
+        .vacancy-form-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .form-title {
+            font-size: 24px;
+        }
+
+        .section-head h3 {
+            font-size: 19px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn-primary,
+        .form-actions .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,489 @@
+{% extends 'base.html' %}
+
+{% block title %}Employer panel — IshTopish{% endblock %}
+{% block page_title %}Employer dashboard{% endblock %}
+{% block page_subtitle %}Vakansiyalar, arizalar va kompaniya profilingizni boshqaring{% endblock %}
+
+{% block content %}
+<div class="employer-dashboard">
+
+    <section class="dashboard-hero">
+        <div class="dashboard-hero__content">
+            <div class="dashboard-badge">Employer paneli</div>
+            <h2 class="dashboard-hero__title">
+                Xush kelibsiz, {{ request.user.employer_profile.company_name|default:"Ish beruvchi" }}
+            </h2>
+            <p class="dashboard-hero__text">
+                Vakansiyalarni e’lon qiling, nomzodlar arizalarini ko‘rib chiqing va kompaniya profilingizni qulay boshqaring.
+            </p>
+
+            <div class="dashboard-hero__actions">
+                <a href="{% url 'vacancy_create' %}" class="btn-primary">Vakansiya qo‘shish</a>
+                <a href="{% url 'vacancy_list' %}" class="btn-secondary">Vakansiyalarni ko‘rish</a>
+            </div>
+        </div>
+
+        <div class="dashboard-hero__stats">
+            <div class="hero-info-card">
+                <span class="hero-info-card__label">Bugungi tavsiya</span>
+                <strong class="hero-info-card__title">Yangi vakansiya joylang</strong>
+                <p class="hero-info-card__text">
+                    Faol vakansiyalar ko‘proq nomzodlarni jalb qiladi va kompaniyangiz ko‘rinishini kuchaytiradi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-grid">
+        <a href="{% url 'vacancy_list' %}" class="feature-card">
+            <div class="feature-icon feature-icon--blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div class="feature-content">
+                <h3>Vakansiyalar</h3>
+                <p>Yangi ish o‘rinlarini e’lon qiling, mavjud vakansiyalarni boshqaring va tahrirlang.</p>
+                <span>Ro‘yxatni ko‘rish</span>
+            </div>
+        </a>
+
+        <a href="{% url 'employer_applications_list' %}" class="feature-card">
+            <div class="feature-icon feature-icon--green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg></div>
+            <div class="feature-content">
+                <h3>Arizalar</h3>
+                <p>Nomzodlar tomonidan yuborilgan arizalarni bir joyda ko‘rib chiqib, saralab boring.</p>
+                <span>Arizalarni ko‘rish</span>
+            </div>
+        </a>
+
+        <a href="{% url 'edit_profile' %}" class="feature-card">
+            <div class="feature-icon feature-icon--cyan"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18z"/><path d="M6 12H4a2 2 0 00-2 2v6a2 2 0 002 2h2"/><path d="M18 9h2a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg></div>
+            <div class="feature-content">
+                <h3>Kompaniya profili</h3>
+                <p>Kompaniya ma’lumotlari, aloqa va umumiy profilingizni yangilab boring.</p>
+                <span>Profilni tahrirlash</span>
+            </div>
+        </a>
+    </section>
+
+    <section class="dashboard-main">
+        <div class="dashboard-main__left">
+            <div class="dashboard-panel">
+                <div class="dashboard-panel__head">
+                    <h3>Tezkor boshqaruv</h3>
+                    <p>Ko‘p ishlatiladigan bo‘limlarga tez va qulay o‘tish imkoniyati</p>
+                </div>
+
+                <div class="quick-actions-grid">
+                    <a href="{% url 'vacancy_create' %}" class="quick-action-card">
+                        <div class="quick-action-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                        <div>
+                            <strong>Yangi vakansiya</strong>
+                            <small>Yangi ish o‘rni e’lonini yarating</small>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'vacancy_list' %}" class="quick-action-card">
+                        <div class="quick-action-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+                        <div>
+                            <strong>Vakansiyalar ro‘yxati</strong>
+                            <small>Barcha e’lonlarni ko‘rib chiqing</small>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'employer_applications_list' %}" class="quick-action-card">
+                        <div class="quick-action-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+                        <div>
+                            <strong>Nomzodlar arizalari</strong>
+                            <small>Yangi arizalarni tekshirib boring</small>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'edit_profile' %}" class="quick-action-card">
+                        <div class="quick-action-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                        <div>
+                            <strong>Profilni yangilash</strong>
+                            <small>Kompaniya sahifasini to‘ldiring</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <aside class="dashboard-main__right">
+            <div class="dashboard-side-card side-tip">
+                <div class="dashboard-side-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1666ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+                <h3>Foydali maslahat</h3>
+                <p>
+                    Vakansiya tavsifini aniq yozing. Lavozim, talablar, maosh va ish sharoiti ko‘rsatilsa, mos nomzodlar soni ko‘payadi.
+                </p>
+            </div>
+
+            <div class="dashboard-side-card side-danger">
+                <h3>Hisobdan chiqish</h3>
+                <p>Tizimdan chiqishda hisobingiz xavfsizligi saqlanadi. Ishingiz tugagach chiqib qo‘yish tavsiya etiladi.</p>
+                <a href="{% url 'logout' %}" class="logout-btn">Tizimdan chiqish</a>
+            </div>
+        </aside>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .employer-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .dashboard-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+        gap: 20px;
+        padding: 26px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .dashboard-hero__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .dashboard-badge {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        border: 1px solid #dbe8ff;
+    }
+
+    .dashboard-hero__title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -1px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .dashboard-hero__text {
+        max-width: 720px;
+        font-size: 15px;
+        line-height: 1.8;
+        color: var(--text-soft);
+    }
+
+    .dashboard-hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .dashboard-hero__stats {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .hero-info-card {
+        width: 100%;
+        border-radius: 22px;
+        padding: 24px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(22, 102, 255, 0.22);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .hero-info-card__label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.86;
+        margin-bottom: 10px;
+    }
+
+    .hero-info-card__title {
+        display: block;
+        font-size: 24px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .hero-info-card__text {
+        font-size: 13px;
+        line-height: 1.8;
+        opacity: 0.92;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .feature-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 22px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        transition: 0.22s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-2px);
+        border-color: #c8d9f0;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .feature-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        border: 1px solid transparent;
+    }
+
+    .feature-icon--blue {
+        background: #eef4ff;
+        border-color: #dbe8ff;
+    }
+
+    .feature-icon--green {
+        background: #ecfdf5;
+        border-color: #d7f5e6;
+    }
+
+    .feature-icon--cyan {
+        background: #ecfeff;
+        border-color: #d8f6f8;
+    }
+
+    .feature-content h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+
+    .feature-content p {
+        font-size: 14px;
+        line-height: 1.75;
+        color: var(--text-soft);
+        margin-bottom: 12px;
+    }
+
+    .feature-content span {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .dashboard-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.8fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .dashboard-main__left,
+    .dashboard-main__right {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .dashboard-panel,
+    .dashboard-side-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .dashboard-panel__head {
+        margin-bottom: 18px;
+    }
+
+    .dashboard-panel__head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .dashboard-panel__head p {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-soft);
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .quick-action-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        background: #fbfdff;
+        transition: 0.2s ease;
+    }
+
+    .quick-action-card:hover {
+        border-color: #c8d9f0;
+        background: #ffffff;
+    }
+
+    .quick-action-card__icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: var(--primary-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .quick-action-card strong {
+        display: block;
+        font-size: 14px;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .quick-action-card small {
+        display: block;
+        font-size: 12px;
+        line-height: 1.6;
+        color: var(--text-soft);
+    }
+
+    .dashboard-side-card__icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 14px;
+    }
+
+    .dashboard-side-card h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .dashboard-side-card p {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-soft);
+    }
+
+    .side-tip {
+        background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+    }
+
+    .side-danger {
+        border-color: #fecaca;
+        background: #fff;
+    }
+
+    .logout-btn {
+        margin-top: 14px;
+        width: 100%;
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        border: 1px solid #fecaca;
+        background: #fff;
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .logout-btn:hover {
+        background: #fef2f2;
+    }
+
+    @media (max-width: 1100px) {
+        .dashboard-main {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .dashboard-hero,
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .dashboard-hero,
+        .feature-card,
+        .dashboard-panel,
+        .dashboard-side-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .dashboard-hero__title {
+            font-size: 26px;
+        }
+
+        .dashboard-panel__head h3 {
+            font-size: 18px;
+        }
+
+        .dashboard-hero__actions {
+            flex-direction: column;
+        }
+
+        .dashboard-hero__actions a {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

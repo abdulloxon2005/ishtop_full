@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+
+{% block title %}Ariza yuborish — IshTopish{% endblock %}
+{% block page_title %}Vakansiyaga ariza yuborish{% endblock %}
+{% block page_subtitle %}Tanlangan vakansiya uchun rezyume yuboring{% endblock %}
+
+{% block content %}
+<div class="apply-page">
+
+    <section class="apply-hero">
+        <div class="apply-hero-left">
+            <div class="apply-badge">Ariza topshirish</div>
+            <h2 class="apply-title">{{ vacancy.title }}</h2>
+            <p class="apply-company">{{ vacancy.employer.employer_profile.company_name }}</p>
+            <p class="apply-text">
+                Quyidagi formani to‘ldirib, ushbu vakansiya bo‘yicha arizangizni yuboring.
+                Rezyume tanlanganidan so‘ng ariza ish beruvchiga yuboriladi.
+            </p>
+        </div>
+
+        <div class="apply-hero-right">
+            <div class="apply-summary-card">
+                <span class="summary-label">Tanlangan vakansiya</span>
+                <strong class="summary-title">{{ vacancy.title }}</strong>
+                <p class="summary-company">{{ vacancy.employer.employer_profile.company_name }}</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="apply-layout">
+        <div class="apply-main">
+
+            <section class="apply-card">
+                <div class="section-head">
+                    <h3>Ariza formasi</h3>
+                    <p>Rezyumeni tanlang va rozilikni tasdiqlang</p>
+                </div>
+
+                <form method="POST" class="apply-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="resume_id">Rezyumengizni tanlang</label>
+
+                        {% if resumes %}
+                            <select name="resume_id" id="resume_id" required>
+                                <option value="" selected disabled>-- Rezyume tanlang --</option>
+                                {% for resume in resumes %}
+                                    <option value="{{ resume.id }}">
+                                        {{ resume.title }} (Yangilangan: {{ resume.updated_at|date:"d.m.Y" }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <div class="status-box warning-box">
+                                <div class="status-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                                <div>
+                                    <h4>Sizda hali rezyume yo‘q</h4>
+                                    <p>
+                                        <a href="{% url 'candidate_profile' %}">Profilga o‘ting</a> va avval rezyume yarating.
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="consent-box">
+                        <label class="consent-label">
+                            <input type="checkbox" name="data_consent" id="consentCheck" required>
+                            <span>
+                                Men ushbu vakansiyaga ariza topshirish orqali shaxsiy ma’lumotlarim va rezyumeimdagi ma’lumotlarim
+                                ish beruvchi tomonidan ko‘rib chiqilishiga hamda qayta ishlanishiga rozilik beraman.
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'vacancy_detail' vacancy.id %}" class="btn-secondary form-btn">
+                            Bekor qilish
+                        </a>
+
+                        <button type="submit" class="submit-btn {% if not resumes %}disabled-btn{% endif %}" {% if not resumes %}disabled{% endif %}>
+                            Arizani yuborish
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+        </div>
+
+        <aside class="apply-side">
+            <section class="side-card">
+                <h3>Ariza yuborishdan oldin</h3>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <strong>Rezyume dolzarb bo‘lsin</strong>
+                        <small>Oxirgi ma’lumotlar bilan yangilanganini tekshiring</small>
+                    </div>
+                    <div class="tip-item">
+                        <strong>Ma’lumotlarni tekshiring</strong>
+                        <small>Lavozim va kompaniya sizga mosligini ko‘rib chiqing</small>
+                    </div>
+                    <div class="tip-item">
+                        <strong>Rozilikni belgilang</strong>
+                        <small>Ariza yuborish uchun majburiy tasdiq kerak bo‘ladi</small>
+                    </div>
+                </div>
+            </section>
+
+            <a href="{% url 'vacancy_detail' vacancy.id %}" class="back-link-card">
+                <span class="back-icon">←</span>
+                <div>
+                    <strong>Vakansiyaga qaytish</strong>
+                    <small>Vakansiya tafsilotlarini yana ko‘rish</small>
+                </div>
+            </a>
+        </aside>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .apply-page {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .apply-hero {
+        display: grid;
+        grid-template-columns: 1.35fr 0.85fr;
+        gap: 20px;
+        background: linear-gradient(135deg, #f7fbff, #eef4ff);
+        border: 1px solid #dbe5f0;
+        border-radius: 24px;
+        padding: 28px;
+    }
+
+    .apply-hero-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .apply-badge {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #eaf2ff;
+        color: #1666ff;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 14px;
+    }
+
+    .apply-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    .apply-company {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1666ff;
+        margin-bottom: 12px;
+    }
+
+    .apply-text {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #64748b;
+        max-width: 700px;
+    }
+
+    .apply-hero-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .apply-summary-card {
+        width: 100%;
+        background: linear-gradient(135deg, #1666ff, #0f52d6);
+        color: #fff;
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 16px 35px rgba(22, 102, 255, 0.2);
+    }
+
+    .summary-label {
+        display: block;
+        font-size: 13px;
+        opacity: 0.85;
+        margin-bottom: 10px;
+    }
+
+    .summary-title {
+        display: block;
+        font-size: 24px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .summary-company {
+        font-size: 14px;
+        line-height: 1.7;
+        opacity: 0.92;
+    }
+
+    .apply-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.8fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .apply-main,
+    .apply-side {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .apply-card,
+    .side-card {
+        background: #fff;
+        border: 1px solid #dbe5f0;
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-head {
+        margin-bottom: 18px;
+    }
+
+    .section-head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+        letter-spacing: -0.4px;
+    }
+
+    .section-head p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .apply-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .form-group select {
+        width: 100%;
+        min-height: 52px;
+        border: 1px solid #dbe5f0;
+        background: #f8fbff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        color: #0f172a;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    .form-group select:focus {
+        background: #fff;
+        border-color: #1666ff;
+        box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .consent-box {
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fbff;
+        border: 1px solid #dbe5f0;
+    }
+
+    .consent-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .consent-label input[type="checkbox"] {
+        margin-top: 2px;
+        width: 16px;
+        height: 16px;
+        accent-color: #1666ff;
+        flex-shrink: 0;
+    }
+
+    .consent-label span {
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.8;
+    }
+
+    .status-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .status-icon {
+        font-size: 24px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .status-box h4 {
+        font-size: 17px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .status-box p {
+        font-size: 14px;
+        line-height: 1.7;
+        color: #64748b;
+    }
+
+    .status-box a {
+        color: #1666ff;
+        font-weight: 700;
+    }
+
+    .warning-box {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .form-btn,
+    .submit-btn {
+        flex: 1;
+        min-height: 52px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 700;
+        transition: 0.2s ease;
+        font-family: "Inter", sans-serif;
+    }
+
+    .submit-btn {
+        border: none;
+        background: linear-gradient(135deg, #1666ff, #0f52d6);
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(22, 102, 255, 0.2);
+        cursor: pointer;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    .disabled-btn {
+        opacity: 0.65;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .side-card h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 14px;
+    }
+
+    .tips-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .tip-item {
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: #fbfdff;
+    }
+
+    .tip-item strong {
+        display: block;
+        font-size: 14px;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .tip-item small {
+        display: block;
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .back-link-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px;
+        border-radius: 18px;
+        background: #fff;
+        border: 1px solid #dbe5f0;
+        transition: 0.2s ease;
+    }
+
+    .back-link-card:hover {
+        border-color: #bfd5f3;
+        background: #fbfdff;
+    }
+
+    .back-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #eef4ff;
+        color: #1666ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .back-link-card strong {
+        display: block;
+        font-size: 14px;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .back-link-card small {
+        display: block;
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+        .apply-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .apply-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .apply-hero,
+        .apply-card,
+        .side-card {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .apply-title {
+            font-size: 26px;
+        }
+
+        .section-head h3 {
+            font-size: 18px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

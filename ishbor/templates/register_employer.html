@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kompaniya ro‘yxatdan o‘tishi — IshTopish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1666ff;
+      --primary-dark: #0f52d6;
+      --primary-soft: #eef4ff;
+      --bg: #f3f7fd;
+      --white: #ffffff;
+      --text: #111827;
+      --text-soft: #5b6b82;
+      --border: #d9e4f1;
+      --input-bg: #f7f9fc;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      --danger: #dc2626;
+      --success: #16a34a;
+      --container: 1180px;
+      --radius-lg: 28px;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(217, 228, 241, 0.9);
+    }
+
+    .nav-inner {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--text);
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .nav-back:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    main {
+      min-height: calc(100vh - 74px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 42px 0;
+    }
+
+    .auth-shell {
+      width: 100%;
+      max-width: 1120px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      box-shadow: var(--shadow);
+      border: 1px solid #e5edf6;
+    }
+
+    .auth-left {
+      background: #ffffff;
+      padding: 44px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-right {
+      position: relative;
+      background: linear-gradient(160deg, #1d74ff 0%, #155df0 55%, #0f52d6 100%);
+      color: white;
+      padding: 56px 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .auth-right::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      top: -80px;
+      right: -70px;
+      z-index: -1;
+    }
+
+    .auth-right::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      bottom: -90px;
+      left: -80px;
+      z-index: -1;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .welcome-box {
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .top-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 auto 16px;
+    }
+
+    .auth-title {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -1.1px;
+      margin-bottom: 10px;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .auth-sub {
+      text-align: center;
+      font-size: 15px;
+      color: var(--text-soft);
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .step.done .step-dot {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: var(--primary);
+    }
+
+    .step.active .step-dot {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .step-line {
+      width: 34px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .alert {
+      padding: 13px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+      border: 1px solid transparent;
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: var(--danger);
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: var(--success);
+    }
+
+    .non-field-errors ul,
+    .field-errors ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 22px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf2f7;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .field-label,
+    .form-group > label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .req {
+      color: var(--danger);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+
+    .input-icon.top {
+      top: 16px;
+      transform: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select,
+    .input-wrap textarea,
+    .form-group input:not([type="checkbox"]):not([type="radio"]),
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      min-height: 52px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      border-radius: 12px;
+      padding: 14px 16px 14px 42px;
+      font-size: 14px;
+      font-family: "Inter", sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: 0.2s ease;
+      appearance: none;
+    }
+
+    .input-wrap textarea,
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+      padding-top: 14px;
+    }
+
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder,
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #8fa0b5;
+    }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus,
+    .input-wrap textarea:focus,
+    .form-group input:not([type="checkbox"]):not([type="radio"]):focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      background: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(22, 102, 255, 0.10);
+    }
+
+    .field-errors {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--danger);
+      line-height: 1.6;
+    }
+
+    .help-text,
+    .form-group small,
+    .form-group .helptext {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+      opacity: 0.7;
+    }
+
+    .pw-strength {
+      margin-top: 8px;
+    }
+
+    .pw-strength-bar {
+      height: 4px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .pw-strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .pw-strength-text {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .consent-group {
+      display: grid;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .consent-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .consent-item:hover {
+      border-color: #bfd5f3;
+      background: #fbfdff;
+    }
+
+    .consent-item input[type="checkbox"] {
+      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .consent-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-soft);
+    }
+
+    .consent-text a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .consent-text a:hover {
+      text-decoration: underline;
+    }
+
+    .consent-required {
+      color: var(--danger);
+      margin-left: 4px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: "Inter", sans-serif;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 12px 28px rgba(22, 102, 255, 0.2);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(22, 102, 255, 0.24);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-submit.loading {
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .btn-submit.loading .spinner {
+      display: block;
+    }
+
+    .btn-submit.loading .btn-txt {
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .form-bottom {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .login-row {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.7;
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .login-row a {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .login-row a:hover {
+      text-decoration: underline;
+    }
+
+    .gdpr-note {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .gdpr-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      letter-spacing: 0.4px;
+    }
+
+    .welcome-title {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      line-height: 1.9;
+      color: rgba(255,255,255,0.9);
+      max-width: 320px;
+      margin: 0 auto 24px;
+    }
+
+    .welcome-list {
+      display: grid;
+      gap: 10px;
+      text-align: left;
+      max-width: 300px;
+      margin: 0 auto 24px;
+    }
+
+    .welcome-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .welcome-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 220px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .welcome-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    @media (max-width: 920px) {
+      .auth-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-right {
+        min-height: 290px;
+      }
+
+      .auth-left,
+      .auth-right {
+        padding: 34px 24px;
+      }
+
+      .auth-title {
+        font-size: 30px;
+      }
+
+      .welcome-title {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-inner {
+        height: 68px;
+      }
+
+      main {
+        min-height: calc(100vh - 68px);
+        padding: 22px 0;
+      }
+
+      .container {
+        padding: 0 16px;
+      }
+
+      .auth-shell {
+        border-radius: 22px;
+      }
+
+      .auth-left,
+      .auth-right {
+        padding: 26px 18px;
+      }
+
+      .auth-title {
+        font-size: 27px;
+      }
+
+      .auth-sub,
+      .welcome-text {
+        font-size: 14px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="/" class="logo">Ish<span>Topish</span></a>
+      <a href="/register/" class="nav-back">Orqaga</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div class="auth-shell">
+
+        <div class="auth-left">
+          <div class="form-box">
+            <div style="text-align:center;">
+              <div class="top-badge">Qadam 2 / 3</div>
+            </div>
+
+            <div class="steps">
+              <div class="step done">
+                <span class="step-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                <span>Rol</span>
+              </div>
+              <div class="step-line"></div>
+              <div class="step active">
+                <span class="step-dot">2</span>
+                <span>Ma’lumot</span>
+              </div>
+              <div class="step-line"></div>
+              <div class="step">
+                <span class="step-dot">3</span>
+                <span>Tasdiq</span>
+              </div>
+            </div>
+
+            <h1 class="auth-title">Kompaniya profili</h1>
+            <p class="auth-sub">
+              Kompaniyangiz haqida asosiy ma’lumotlarni kiriting va IshTopish platformasida ish beruvchi sifatida ro‘yxatdan o‘ting.
+            </p>
+
+            <form method="POST" id="employerForm" novalidate>
+              {% csrf_token %}
+
+              {% if form.non_field_errors %}
+                <div class="alert alert-error non-field-errors">
+                  {{ form.non_field_errors.0 }}
+                </div>
+              {% endif %}
+
+              <div class="section-title">Hisob ma’lumotlari</div>
+
+              <div class="form-row">
+                {% if form.username %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.username.id_for_label }}">
+                    Foydalanuvchi nomi <span class="req">*</span>
+                  </label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <input
+                      type="text"
+                      id="{{ form.username.id_for_label }}"
+                      name="username"
+                      placeholder="kompaniya_nomi"
+                      autocomplete="username"
+                      value="{{ form.username.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.username.errors %}
+                    <div class="field-errors">{{ form.username.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.email %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.email.id_for_label }}">
+                    Elektron pochta <span class="req">*</span>
+                  </label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span>
+                    <input
+                      type="email"
+                      id="{{ form.email.id_for_label }}"
+                      name="email"
+                      placeholder="info@kompaniya.uz"
+                      autocomplete="email"
+                      value="{{ form.email.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.email.errors %}
+                    <div class="field-errors">{{ form.email.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="section-title">Kompaniya ma’lumotlari</div>
+
+              <div class="form-row">
+                {% if form.company_name %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.company_name.id_for_label }}">
+                    Kompaniya nomi <span class="req">*</span>
+                  </label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18z"/><path d="M6 12H4a2 2 0 00-2 2v6a2 2 0 002 2h2"/><path d="M18 9h2a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg></span>
+                    <input
+                      type="text"
+                      id="{{ form.company_name.id_for_label }}"
+                      name="company_name"
+                      placeholder="Masalan: Uzum Market"
+                      value="{{ form.company_name.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.company_name.errors %}
+                    <div class="field-errors">{{ form.company_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.industry %}
+                <div class="form-group">
+                  <label class="field-label" for="{{ form.industry.id_for_label }}">Soha</label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20V8l4-2v6l4-4v6l4-4v10"/><path d="M18 10l4-2v12"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span>
+                    <select id="{{ form.industry.id_for_label }}" name="industry">
+                      <option value="">Tanlang</option>
+                      <option value="it" {% if form.industry.value == "it" %}selected{% endif %}>IT va texnologiya</option>
+                      <option value="finance" {% if form.industry.value == "finance" %}selected{% endif %}>Moliya va bank</option>
+                      <option value="retail" {% if form.industry.value == "retail" %}selected{% endif %}>Savdo</option>
+                      <option value="manufacturing" {% if form.industry.value == "manufacturing" %}selected{% endif %}>Ishlab chiqarish</option>
+                      <option value="education" {% if form.industry.value == "education" %}selected{% endif %}>Ta’lim</option>
+                      <option value="healthcare" {% if form.industry.value == "healthcare" %}selected{% endif %}>Tibbiyot</option>
+                      <option value="construction" {% if form.industry.value == "construction" %}selected{% endif %}>Qurilish</option>
+                      <option value="media" {% if form.industry.value == "media" %}selected{% endif %}>Media va reklama</option>
+                      <option value="logistics" {% if form.industry.value == "logistics" %}selected{% endif %}>Logistika</option>
+                      <option value="other" {% if form.industry.value == "other" %}selected{% endif %}>Boshqa</option>
+                    </select>
+                  </div>
+                  {% if form.industry.errors %}
+                    <div class="field-errors">{{ form.industry.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.company_size %}
+                <div class="form-group">
+                  <label class="field-label" for="{{ form.company_size.id_for_label }}">Xodimlar soni</label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
+                    <select id="{{ form.company_size.id_for_label }}" name="company_size">
+                      <option value="">Tanlang</option>
+                      <option value="1-10" {% if form.company_size.value == "1-10" %}selected{% endif %}>1–10</option>
+                      <option value="11-50" {% if form.company_size.value == "11-50" %}selected{% endif %}>11–50</option>
+                      <option value="51-200" {% if form.company_size.value == "51-200" %}selected{% endif %}>51–200</option>
+                      <option value="201-500" {% if form.company_size.value == "201-500" %}selected{% endif %}>201–500</option>
+                      <option value="500+" {% if form.company_size.value == "500+" %}selected{% endif %}>500+</option>
+                    </select>
+                  </div>
+                  {% if form.company_size.errors %}
+                    <div class="field-errors">{{ form.company_size.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.website %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.website.id_for_label }}">Veb-sayt</label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></span>
+                    <input
+                      type="url"
+                      id="{{ form.website.id_for_label }}"
+                      name="website"
+                      placeholder="https://kompaniya.uz"
+                      value="{{ form.website.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.website.errors %}
+                    <div class="field-errors">{{ form.website.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.phone %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.phone.id_for_label }}">Telefon raqam</label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></span>
+                    <input
+                      type="tel"
+                      id="{{ form.phone.id_for_label }}"
+                      name="phone"
+                      placeholder="+998 71 123 45 67"
+                      value="{{ form.phone.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.phone.errors %}
+                    <div class="field-errors">{{ form.phone.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.address %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.address.id_for_label }}">Manzil</label>
+                  <div class="input-wrap">
+                    <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                    <input
+                      type="text"
+                      id="{{ form.address.id_for_label }}"
+                      name="address"
+                      placeholder="Shahar, ko‘cha, bino"
+                      value="{{ form.address.value|default:'' }}"
+                    />
+                  </div>
+                  {% if form.address.errors %}
+                    <div class="field-errors">{{ form.address.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if form.description %}
+                <div class="form-group full">
+                  <label class="field-label" for="{{ form.description.id_for_label }}">Kompaniya haqida</label>
+                  <div class="input-wrap">
+                    <span class="input-icon top"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+                    <textarea
+                      id="{{ form.description.id_for_label }}"
+                      name="description"
+                      placeholder="Kompaniyangiz faoliyati, maqsadi va asosiy yo‘nalishlari haqida qisqacha yozing..."
+                    >{{ form.description.value|default:'' }}</textarea>
+                  </div>
+                  {% if form.description.errors %}
+                    <div class="field-errors">{{ form.description.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="section-title">Parol</div>
+
+              {% if form.password1 %}
+              <div class="form-group">
+                <label class="field-label" for="{{ form.password1.id_for_label }}">
+                  Parol <span class="req">*</span>
+                </label>
+                <div class="input-wrap">
+                  <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+                  <input
+                    type="password"
+                    id="{{ form.password1.id_for_label }}"
+                    name="password1"
+                    placeholder="Kuchli parol kiriting"
+                    autocomplete="new-password"
+                  />
+                  <button type="button" class="pw-toggle" data-target="{{ form.password1.id_for_label }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </div>
+                <div class="pw-strength">
+                  <div class="pw-strength-bar">
+                    <div class="pw-strength-fill" id="pwFill"></div>
+                  </div>
+                  <div class="pw-strength-text" id="pwText">Parol kuchini ko‘rish uchun yozing</div>
+                </div>
+                {% if form.password1.errors %}
+                  <div class="field-errors">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              {% if form.password2 %}
+              <div class="form-group">
+                <label class="field-label" for="{{ form.password2.id_for_label }}">
+                  Parolni tasdiqlash <span class="req">*</span>
+                </label>
+                <div class="input-wrap">
+                  <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="12" cy="16" r="1"/></svg></span>
+                  <input
+                    type="password"
+                    id="{{ form.password2.id_for_label }}"
+                    name="password2"
+                    placeholder="Parolni qayta kiriting"
+                    autocomplete="new-password"
+                  />
+                  <button type="button" class="pw-toggle" data-target="{{ form.password2.id_for_label }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </div>
+                {% if form.password2.errors %}
+                  <div class="field-errors">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              <div class="section-title">Rozilik</div>
+
+              <div class="consent-group">
+                <label class="consent-item">
+                  <input type="checkbox" name="agree_terms" id="agreeTerms" required />
+                  <div class="consent-text">
+                    <a href="/terms/" target="_blank">Foydalanish shartlari</a> va
+                    <a href="/privacy/" target="_blank">maxfiylik siyosati</a> bilan tanishdim va roziman
+                    <span class="consent-required">*</span>
+                  </div>
+                </label>
+
+                <label class="consent-item">
+                  <input type="checkbox" name="agree_gdpr" id="agreeGdpr" required />
+                  <div class="consent-text">
+                    Kompaniya ma’lumotlari <a href="/gdpr/" target="_blank">GDPR qoidalari</a> asosida qayta ishlanishiga roziman
+                    <span class="consent-required">*</span>
+                  </div>
+                </label>
+
+                <label class="consent-item">
+                  <input type="checkbox" name="agree_marketing" id="agreeMarketing" />
+                  <div class="consent-text">
+                    Platformadagi yangiliklar va yangi nomzodlar haqida xabarnoma olishni xohlayman
+                  </div>
+                </label>
+              </div>
+
+              <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                <span class="btn-txt">Ro‘yxatdan o‘tish</span>
+                <div class="spinner"></div>
+              </button>
+            </form>
+
+            <div class="login-row">
+              Hisobingiz bormi? <a href="/login/">Kirish</a>
+            </div>
+
+            <div class="gdpr-note">
+              <div class="gdpr-dot"></div>
+              Ma’lumotlaringiz himoyalangan
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-right">
+          <div class="welcome-box">
+            <div class="welcome-badge">Ish beruvchi profili</div>
+            <h2 class="welcome-title">Kuchli jamoani tezroq toping</h2>
+            <p class="welcome-text">
+              Kompaniyangiz profilini to‘ldiring va eng mos nomzodlarni topish uchun IshTopish platformasidan foydalanishni boshlang.
+            </p>
+
+            <div class="welcome-list">
+              <div class="welcome-item">Vakansiyalarni tez joylash imkoniyati</div>
+              <div class="welcome-item">Nomzodlarni ko‘rish va saralash qulayligi</div>
+              <div class="welcome-item">Professional va ishonchli kompaniya profili</div>
+            </div>
+
+            <a href="/login/" class="welcome-btn">Hisobingiz bormi? Kirish</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        if (!input) return;
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.innerHTML = show ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.7a3 3 0 004.2 4.2"/><path d="M9.4 5.5A10.9 10.9 0 0112 5c6.5 0 10 7 10 7a17.2 17.2 0 01-3.1 3.8"/><path d="M6.6 6.7C4 8.5 2 12 2 12a17.7 17.7 0 005.4 5.3"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>';
+      });
+    });
+
+    const pw1 = document.querySelector('input[name="password1"]');
+    const pwFill = document.getElementById('pwFill');
+    const pwText = document.getElementById('pwText');
+
+    if (pw1 && pwFill && pwText) {
+      pw1.addEventListener('input', () => {
+        const v = pw1.value;
+        let s = 0;
+        if (v.length >= 8) s++;
+        if (/[A-Z]/.test(v)) s++;
+        if (/[0-9]/.test(v)) s++;
+        if (/[^A-Za-z0-9]/.test(v)) s++;
+
+        const levels = [
+          { p: '0%', c: '#cbd5e1', l: 'Parol kuchini ko‘rish uchun yozing' },
+          { p: '25%', c: '#f97316', l: 'Zaif' },
+          { p: '50%', c: '#eab308', l: 'O‘rtacha' },
+          { p: '75%', c: '#22c55e', l: 'Yaxshi' },
+          { p: '100%', c: '#1666ff', l: 'Kuchli' }
+        ];
+
+        const lvl = v.length === 0 ? levels[0] : levels[s];
+        pwFill.style.width = lvl.p;
+        pwFill.style.background = lvl.c;
+        pwText.textContent = lvl.l;
+        pwText.style.color = lvl.c;
+      });
+    }
+
+    const agreeTerms = document.getElementById('agreeTerms');
+    const agreeGdpr = document.getElementById('agreeGdpr');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function checkConsent() {
+      submitBtn.disabled = !(agreeTerms.checked && agreeGdpr.checked);
+    }
+
+    agreeTerms.addEventListener('change', checkConsent);
+    agreeGdpr.addEventListener('change', checkConsent);
+
+    document.getElementById('employerForm').addEventListener('submit', () => {
+      submitBtn.classList.add('loading');
+    });
+  </script>
+
+</body>
+</html>
