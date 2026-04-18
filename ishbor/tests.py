@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import User, CandidateProfile, EmployerProfile, Vacancy, Application, Resume, Interview
+from .models import User, CandidateProfile, EmployerProfile, Vacancy, Application, Resume, Interview, Consent
 
 
 class UserModelTest(TestCase):
@@ -78,10 +78,16 @@ class AuthViewsTest(TestCase):
         })
         self.assertEqual(response.status_code, 200)
     
-    def test_logout(self):
-        """Logout muvaffaqiyatli ishlashi kerak."""
+    def test_logout_requires_post(self):
+        """O6-FIX: Logout faqat POST orqali ishlashi kerak."""
         self.client.login(username='testcandidate', password='testpass123')
         response = self.client.get(reverse('logout'))
+        self.assertEqual(response.status_code, 405)
+    
+    def test_logout_via_post(self):
+        """POST orqali logout muvaffaqiyatli ishlashi kerak."""
+        self.client.login(username='testcandidate', password='testpass123')
+        response = self.client.post(reverse('logout'))
         self.assertRedirects(response, reverse('login'))
     
     def test_authenticated_user_redirect_from_login(self):
@@ -312,3 +318,245 @@ class JobListTest(TestCase):
         """Manzilga ko'ra qidirish."""
         response = self.client.get(reverse('job_list'), {'location': 'Toshkent'})
         self.assertEqual(response.status_code, 200)
+
+
+# ==========================================
+# P2-FIX: GDPR TESTLARI
+# ==========================================
+
+class GDPRExportDataTest(TestCase):
+    """GDPR — Ma'lumotlarni eksport qilish testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+        self.candidate = User.objects.create_user(
+            username='gdpr_candidate', password='testpass123',
+            role='candidate', email='gdpr@test.com'
+        )
+        CandidateProfile.objects.create(
+            user=self.candidate, gdpr_consent=True
+        )
+        self.client.login(username='gdpr_candidate', password='testpass123')
+    
+    def test_export_data_returns_json(self):
+        """Ma'lumotlarni eksport qilish JSON formatda qaytarishi kerak."""
+        response = self.client.get(reverse('export_user_data'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+        self.assertIn('attachment', response.get('Content-Disposition', ''))
+    
+    def test_export_data_contains_account(self):
+        """Eksport qilingan ma'lumotda hisob ma'lumotlari bo'lishi kerak."""
+        import json
+        response = self.client.get(reverse('export_user_data'))
+        data = json.loads(response.content)
+        self.assertIn('account', data)
+        self.assertEqual(data['account']['username'], 'gdpr_candidate')
+    
+    def test_export_creates_consent_log(self):
+        """Eksport qilish rozilik jurnalini yaratishi kerak."""
+        self.client.get(reverse('export_user_data'))
+        consent = Consent.objects.filter(
+            user=self.candidate,
+            consent_type='data_processing'
+        )
+        self.assertTrue(consent.exists())
+    
+    def test_export_requires_auth(self):
+        """Login qilmagan foydalanuvchi eksport qila olmasligi kerak."""
+        self.client.logout()
+        response = self.client.get(reverse('export_user_data'))
+        self.assertEqual(response.status_code, 302)  # Login sahifasiga yo'naltirish
+
+
+class GDPRDeleteAccountTest(TestCase):
+    """GDPR — Hisobni o'chirish testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='delete_me', password='testpass123',
+            role='candidate'
+        )
+        CandidateProfile.objects.create(user=self.user)
+        self.client.login(username='delete_me', password='testpass123')
+    
+    def test_delete_account_page_loads(self):
+        """Hisobni o'chirish sahifasi 200 qaytarishi kerak."""
+        response = self.client.get(reverse('delete_account'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_delete_account_wrong_password(self):
+        """Noto'g'ri parol bilan o'chirish muvaffaqiyatsiz bo'lishi kerak."""
+        response = self.client.post(reverse('delete_account'), {
+            'password': 'wrongpassword',
+            'confirm_delete': 'DELETE'
+        })
+        # Foydalanuvchi o'chirilmagan
+        self.assertTrue(User.objects.filter(username='delete_me').exists())
+    
+    def test_delete_account_wrong_confirmation(self):
+        """Noto'g'ri tasdiqlash matni bilan o'chirish rad etilishi kerak."""
+        response = self.client.post(reverse('delete_account'), {
+            'password': 'testpass123',
+            'confirm_delete': 'WRONG'
+        })
+        self.assertTrue(User.objects.filter(username='delete_me').exists())
+    
+    def test_delete_account_success(self):
+        """To'g'ri parol va tasdiqlash bilan hisob o'chirilishi kerak."""
+        response = self.client.post(reverse('delete_account'), {
+            'password': 'testpass123',
+            'confirm_delete': 'DELETE'
+        })
+        self.assertFalse(User.objects.filter(username='delete_me').exists())
+        self.assertRedirects(response, reverse('home'))
+    
+    def test_delete_requires_auth(self):
+        """Login qilmagan foydalanuvchi o'chira olmasligi kerak."""
+        self.client.logout()
+        response = self.client.get(reverse('delete_account'))
+        self.assertEqual(response.status_code, 302)
+
+
+class GDPRConsentTest(TestCase):
+    """GDPR — Rozilik boshqaruvi testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='consent_user', password='testpass123',
+            role='candidate'
+        )
+        CandidateProfile.objects.create(user=self.user, gdpr_consent=True)
+        self.client.login(username='consent_user', password='testpass123')
+    
+    def test_update_consent_requires_post(self):
+        """Consent yangilash faqat POST orqali ishlashi kerak."""
+        response = self.client.get(reverse('update_gdpr_consent'))
+        self.assertEqual(response.status_code, 405)
+    
+    def test_consent_grant(self):
+        """GDPR roziligi berilishi kerak."""
+        response = self.client.post(reverse('update_gdpr_consent'), {
+            'gdpr_consent': 'on',
+        })
+        profile = CandidateProfile.objects.get(user=self.user)
+        self.assertTrue(profile.gdpr_consent)
+        self.assertIsNotNone(profile.gdpr_consent_date)
+    
+    def test_consent_revoke_clears_date(self):
+        """O1-FIX: Rozilik bekor qilinganda sana ham tozalanishi kerak."""
+        # Avval rozilik beramiz
+        self.client.post(reverse('update_gdpr_consent'), {
+            'gdpr_consent': 'on',
+        })
+        # Keyin bekor qilamiz
+        self.client.post(reverse('update_gdpr_consent'), {})
+        profile = CandidateProfile.objects.get(user=self.user)
+        self.assertFalse(profile.gdpr_consent)
+        self.assertIsNone(profile.gdpr_consent_date)
+    
+    def test_consent_creates_log(self):
+        """Rozilik o'zgarganda jurnal yozilishi kerak."""
+        self.client.post(reverse('update_gdpr_consent'), {
+            'gdpr_consent': 'on',
+        })
+        consent_logs = Consent.objects.filter(
+            user=self.user, consent_type='gdpr'
+        )
+        self.assertTrue(consent_logs.exists())
+    
+    def test_consent_log_has_policy_version(self):
+        """O2-FIX: Consent jurnalida siyosat versiyasi bo'lishi kerak."""
+        self.client.post(reverse('update_gdpr_consent'), {
+            'gdpr_consent': 'on',
+        })
+        consent = Consent.objects.filter(
+            user=self.user, consent_type='gdpr'
+        ).latest('accepted_at')
+        self.assertIsNotNone(consent.policy_version)
+        self.assertNotEqual(consent.policy_version, '')
+
+
+class GDPRRegistrationConsentTest(TestCase):
+    """K4-FIX: Ro'yxatdan o'tishda GDPR rozilik testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+    
+    def test_candidate_registration_creates_consent(self):
+        """Nomzod ro'yxatdan o'tganda consent yaratilishi kerak."""
+        response = self.client.post(reverse('register_candidate'), {
+            'full_name': 'Test User',
+            'username': 'newcandidate',
+            'email': 'new@test.com',
+            'phone': '+998901234567',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+            'consent': True,
+        })
+        # Foydalanuvchi yaratilganini tekshirish
+        if User.objects.filter(username='newcandidate').exists():
+            user = User.objects.get(username='newcandidate')
+            # GDPR consent yaratilganini tekshirish
+            gdpr_consent = Consent.objects.filter(
+                user=user, consent_type='gdpr'
+            )
+            self.assertTrue(gdpr_consent.exists())
+            # Profile da gdpr_consent=True
+            profile = CandidateProfile.objects.get(user=user)
+            self.assertTrue(profile.gdpr_consent)
+            self.assertIsNotNone(profile.gdpr_consent_date)
+
+
+class GDPRPolicyPagesTest(TestCase):
+    """GDPR sahifalari testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+    
+    def test_privacy_policy_page(self):
+        """Maxfiylik siyosati sahifasi 200 qaytarishi kerak."""
+        response = self.client.get(reverse('privacy_policy'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_terms_page(self):
+        """Foydalanish shartlari sahifasi 200 qaytarishi kerak."""
+        response = self.client.get(reverse('terms_of_service'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_gdpr_policy_page(self):
+        """GDPR siyosati sahifasi 200 qaytarishi kerak."""
+        response = self.client.get(reverse('gdpr_policy'))
+        self.assertEqual(response.status_code, 200)
+
+
+class CookieConsentTest(TestCase):
+    """Cookie consent testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+    
+    def test_cookie_consent_post(self):
+        """Cookie consent POST so'rov qabul qilishi kerak."""
+        response = self.client.post(reverse('cookie_consent'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('cookie_consent', response.cookies)
+    
+    def test_cookie_consent_get_rejected(self):
+        """Cookie consent GET so'rov rad qilinishi kerak."""
+        response = self.client.get(reverse('cookie_consent'))
+        self.assertEqual(response.status_code, 405)
+
+
+class ProtectedMediaTest(TestCase):
+    """K5-FIX: Himoyalangan media fayllar testlari."""
+    
+    def setUp(self):
+        self.client = Client()
+    
+    def test_media_requires_auth(self):
+        """Media fayllar autentifikatsiyani talab qilishi kerak."""
+        response = self.client.get('/media/resumes/test.pdf')
+        self.assertEqual(response.status_code, 302)  # Login sahifasiga yo'naltirish

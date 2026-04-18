@@ -21,11 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Production uchun .env fayldan o'qilishi tavsiya etiladi
-SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY',
-    'django-insecure-5kl#9r20v1!=%uqb+)h5+4iej^yz-ql7xgvhaytf7@5sdtovgr'
-)
+# K2-FIX: SECRET_KEY xavfsiz tarzda boshqariladi
+_secret_key_from_env = os.environ.get('DJANGO_SECRET_KEY')
+if _secret_key_from_env:
+    SECRET_KEY = _secret_key_from_env
+else:
+    # Development uchun: .secret_key fayldan o'qiladi yoki yangi yaratadi
+    _secret_key_file = BASE_DIR / '.secret_key'
+    if _secret_key_file.exists():
+        SECRET_KEY = _secret_key_file.read_text().strip()
+    else:
+        import secrets as _secrets
+        SECRET_KEY = _secrets.token_urlsafe(50)
+        _secret_key_file.write_text(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -96,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length': 6,
+            'min_length': 8,  # K6-FIX: Minimal parol uzunligi 8 ga oshirildi
         }
     },
     {
@@ -167,3 +175,18 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Ma'lumotlarni saqlash muddati (kunlarda)
 DATA_RETENTION_DAYS = 365 * 2  # 2 yil
+
+# O2-FIX: GDPR siyosat versiyasi (yangilanganda oshiriladi)
+GDPR_POLICY_VERSION = '1.0'
+
+# K7-FIX: Login urinishlarini cheklash
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_LOCKOUT_TIME = 300  # 5 daqiqa (sekundda)
+
+# Cache (rate limiting uchun)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ishbor-cache',
+    }
+}

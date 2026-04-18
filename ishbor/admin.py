@@ -29,7 +29,7 @@ class CandidateProfileAdmin(admin.ModelAdmin):
 
 @admin.register(EmployerProfile)
 class EmployerProfileAdmin(admin.ModelAdmin):
-    list_display = ('company_name', 'user', 'stir', 'company_phone', 'gdpr_consent', 'marketing_consent')
+    list_display = ('company_name', 'user', 'stir', 'company_phone', 'gdpr_consent', 'marketing_consent', 'updated_at')
     list_filter = ('gdpr_consent', 'marketing_consent')
     search_fields = ('company_name', 'stir', 'user__username')
 
@@ -62,8 +62,8 @@ class InterviewAdmin(admin.ModelAdmin):
 
 @admin.register(Consent)
 class ConsentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'consent_type', 'is_active', 'ip_address', 'accepted_at')
-    list_filter = ('consent_type', 'is_active', 'accepted_at')
+    list_display = ('user', 'consent_type', 'policy_version', 'is_active', 'ip_address', 'accepted_at')
+    list_filter = ('consent_type', 'policy_version', 'is_active', 'accepted_at')
     search_fields = ('user__username', 'consent_text')
     readonly_fields = ('accepted_at', 'ip_address')
 

@@ -24,6 +24,5 @@ urlpatterns = [
     path('', include('ishbor.urls')),
 ]
 
-# Faqat ishlab chiqish (DEBUG=True) bosqichida media fayllarni ko'rish uchun:
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# K5-FIX: Media fayllar endi serve_protected_media orqali himoyalangan
+# Ochiq media serving olib tashlandi

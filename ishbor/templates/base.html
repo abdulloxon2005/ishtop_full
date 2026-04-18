@@ -1017,12 +1017,15 @@
 
             <div class="sidebar-footer">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="menu-item">
-                        <span class="menu-icon">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        </span>
-                        <span class="menu-text">Chiqish</span>
-                    </a>
+                    <form method="POST" action="{% url 'logout' %}" id="logoutForm" style="margin:0;padding:0;border:0;">
+                        {% csrf_token %}
+                        <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class="menu-item">
+                            <span class="menu-icon">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            </span>
+                            <span class="menu-text">Chiqish</span>
+                        </a>
+                    </form>
                 {% else %}
                     <a href="{% url 'login' %}" class="menu-item">
                         <span class="menu-icon">

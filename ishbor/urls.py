@@ -7,7 +7,8 @@ from .views import (login_view, logout_view, candidate_home, employer_home, home
                     resume_create, resume_delete, schedule_interview, respond_to_interview, edit_interview, delete_interview)
 from .views import (
     privacy_policy_view, terms_of_service_view, gdpr_policy_view,
-    export_user_data, delete_account_view, update_gdpr_consent, cookie_consent_view
+    export_user_data, delete_account_view, update_gdpr_consent, cookie_consent_view,
+    serve_protected_media
 )
 
 urlpatterns = [
@@ -57,4 +58,7 @@ urlpatterns = [
     path('account/delete/', delete_account_view, name='delete_account'),
     path('account/gdpr-settings/', update_gdpr_consent, name='update_gdpr_consent'),
     path('cookie-consent/', cookie_consent_view, name='cookie_consent'),
+
+    # K5-FIX: Himoyalangan media fayllar
+    path('media/<path:path>', serve_protected_media, name='serve_protected_media'),
 ]

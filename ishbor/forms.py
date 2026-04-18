@@ -1,7 +1,7 @@
 import os
 from django import forms
 from django.conf import settings
-from .models import User, Vacancy, Application, EmployerProfile, Resume
+from .models import User, Vacancy, Application, EmployerProfile, CandidateProfile, Resume
 
 
 # Bootstrap klasslarini avtomatik qo'shish uchun Mixin
@@ -19,7 +19,7 @@ class RoleChooseForm(forms.Form):
     role = forms.ChoiceField(
         choices=User.ROLE_CHOICES,
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-        label="Siz kimsiz?"
+        label="Rolingizni tanlang:"
     )
 
 # ======================
@@ -176,3 +176,16 @@ def validate_resume_file(file):
         raise forms.ValidationError(
             f"Fayl hajmi {max_size // (1024*1024)} MB dan oshmasligi kerak."
         )
+
+
+# P1-FIX: Nomzod profili uchun forma — validatsiya bilan
+class CandidateProfileForm(forms.ModelForm):
+    class Meta:
+        model = CandidateProfile
+        fields = ['phone', 'bio', 'skills', 'image']
+        widgets = {
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+998 90 123 45 67'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': "O'zingiz haqingizda qisqacha..."}),
+            'skills': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Python, Django, JavaScript...'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
