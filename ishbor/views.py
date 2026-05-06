@@ -12,6 +12,21 @@ from django.conf import settings as django_settings
 from functools import wraps
 import json
 import os
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+# K-PDF-FIX: Arial fontini ro'yxatdan o'tkazish (Unicode/O'zbek tili uchun)
+try:
+    pdfmetrics.registerFont(TTFont('Arial', 'C:/Windows/Fonts/arial.ttf'))
+    FONT_NAME = 'Arial'
+except Exception:
+    FONT_NAME = 'Helvetica'
 
 from .forms import (
     RoleChooseForm, CandidateRegisterForm, 
@@ -617,8 +632,80 @@ def export_user_data(request):
         ip_address=get_client_ip(request),
     )
 
-    response = JsonResponse(data, json_dumps_params={'ensure_ascii': False, 'indent': 2})
-    response['Content-Disposition'] = f'attachment; filename="ishTopish_data_{user.username}.json"'
+    # ==========================================
+    # PDF GENERATION (K-PDF-FIX)
+    # ==========================================
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
+    styles = getSampleStyleSheet()
+    
+    # Maxsus stillar
+    title_style = ParagraphStyle('Title', parent=styles['Heading1'], fontName=FONT_NAME, fontSize=20, alignment=1, spaceAfter=20)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontName=FONT_NAME, fontSize=14, spaceBefore=15, spaceAfter=10, textColor=colors.HexColor('#2c3e50'))
+    normal_style = ParagraphStyle('NormalText', parent=styles['Normal'], fontName=FONT_NAME, fontSize=11, leading=14, spaceAfter=6)
+    label_style = ParagraphStyle('Label', parent=normal_style, fontName=f"{FONT_NAME}", fontWeight='bold')
+
+    elements = []
+
+    # Sarlavha
+    elements.append(Paragraph(f"Shaxsiy ma'lumotlar hisoboti", title_style))
+    elements.append(Paragraph(f"Foydalanuvchi: {user.username}", normal_style))
+    elements.append(Paragraph(f"Sana: {timezone.now().strftime('%d.%m.%Y %H:%M')}", normal_style))
+    elements.append(Spacer(1, 20))
+
+    # 1. Hisob ma'lumotlari
+    elements.append(Paragraph("1. Hisob ma'lumotlari", heading_style))
+    elements.append(Paragraph(f"<b>F.I.SH:</b> {user.first_name} {user.last_name}", normal_style))
+    elements.append(Paragraph(f"<b>Email:</b> {user.email}", normal_style))
+    elements.append(Paragraph(f"<b>Telefon:</b> {user.phone or 'Kiritilmagan'}", normal_style))
+    elements.append(Paragraph(f"<b>Rol:</b> {user.get_role_display()}", normal_style))
+    elements.append(Paragraph(f"<b>Ro'yxatdan o'tgan sana:</b> {user.date_joined.strftime('%d.%m.%Y')}", normal_style))
+
+    # 2. Profil ma'lumotlari
+    if 'profile' in data:
+        elements.append(Paragraph("2. Profil ma'lumotlari", heading_style))
+        p = data['profile']
+        if user.role == 'candidate':
+            elements.append(Paragraph(f"<b>Biografiya:</b> {p.get('bio', '—')}", normal_style))
+            elements.append(Paragraph(f"<b>Ko'nikmalar:</b> {p.get('skills', '—')}", normal_style))
+        else:
+            elements.append(Paragraph(f"<b>Kompaniya nomi:</b> {p.get('company_name', '—')}", normal_style))
+            elements.append(Paragraph(f"<b>STIR:</b> {p.get('stir', '—')}", normal_style))
+            elements.append(Paragraph(f"<b>Manzil:</b> {p.get('company_address', '—')}", normal_style))
+            elements.append(Paragraph(f"<b>Kompaniya telefoni:</b> {p.get('company_phone', '—')}", normal_style))
+            elements.append(Paragraph(f"<b>Mas'ul shaxs:</b> {p.get('responsible_full_name', '—')}", normal_style))
+
+    # 3. Rezyumelar (nomzod bo'lsa)
+    if 'resumes' in data and data['resumes']:
+        elements.append(Paragraph("3. Rezyumelar", heading_style))
+        for r in data['resumes']:
+            elements.append(Paragraph(f"• {r['title']} ({r['created_at'][:10]})", normal_style))
+
+    # 4. Arizalar / Vakansiyalar
+    if user.role == 'candidate' and data['applications']:
+        elements.append(Paragraph("4. Topshirilgan arizalar", heading_style))
+        for app in data['applications']:
+            elements.append(Paragraph(f"• <b>{app['vacancy']}</b> - Holat: {app['status']} ({app['created_at'][:10]})", normal_style))
+            if 'interview' in app:
+                elements.append(Paragraph(f"  <i>Suhbat: {app['interview']['date_time'][:16]} - {app['interview']['status']}</i>", normal_style))
+    
+    elif user.role == 'employer' and data['vacancies']:
+        elements.append(Paragraph("4. E'lon qilingan vakansiyalar", heading_style))
+        for v in data['vacancies']:
+            elements.append(Paragraph(f"• <b>{v['title']}</b> - Maosh: {v['salary']} ({v['created_at'][:10]})", normal_style))
+
+    # 5. Roziliklar (GDPR)
+    if data['consents']:
+        elements.append(Paragraph("5. Roziliklar tarixi", heading_style))
+        for c in data['consents']:
+            elements.append(Paragraph(f"• {c['type']}: {c['accepted_at'][:16]} - {'Faol' if c['is_active'] else 'Noactive'}", normal_style))
+
+    # PDFni yakunlash
+    doc.build(elements)
+    buffer.seek(0)
+    
+    response = FileResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="ishTopish_data_{user.username}.pdf"'
     return response
 
 
